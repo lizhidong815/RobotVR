@@ -1,14 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 
 public class RobotBuilder : MonoBehaviour {
 
-	GameObject robotObject;
-
 	public void buildRobot (string filename) {
-		robotObject = Instantiate(Resources.Load ("Robot")) as GameObject;
 		IO io = new IO();
 		if (!io.Load ("Robots/" + filename))
 			return;
@@ -51,8 +47,8 @@ public class RobotBuilder : MonoBehaviour {
 		for (int i = 0; i < 3; i++) {
 			size [i] = float.Parse (sizestring [i]);
 		}
-		GameObject body = Instantiate(Resources.Load ("Body")) as GameObject;
-		body.transform.SetParent (robotObject.transform, false);
+		GameObject body = Instantiate (Resources.Load ("Body")) as GameObject;
+		//body.transform.SetParent (robotObject.transform, false);
 		body.transform.localScale = new Vector3 (size [0], size [1], size [2]);
 	}
 }

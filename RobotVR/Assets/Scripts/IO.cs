@@ -23,7 +23,7 @@ public class IO{
 			//theReader = new StreamReader(Application.persistentDataPath + "/" + fileName, Encoding.Default);
 			theReader = new StreamReader(Application.dataPath + "/" + fileName, Encoding.Default);
 			return true;
-		} catch (System.Exception e){
+		} catch (System.Exception){
 			return false;
 		}
 	}
