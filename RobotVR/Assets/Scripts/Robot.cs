@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Robot : MonoBehaviour {
 
+	public string id;
+
 	// Use this for initialization
 	void Start () {
 		
