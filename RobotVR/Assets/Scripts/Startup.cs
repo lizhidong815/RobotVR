@@ -6,7 +6,7 @@ public class Startup : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		BuildManagers ();
+		BuildManager ();
 		ReadCommands ();
 	}
 	
@@ -15,13 +15,13 @@ public class Startup : MonoBehaviour {
 		
 	}
 
-	void BuildManagers () {
-		GameObject simManager = Instantiate (Resources.Load ("Empty")) as GameObject;
-		simManager.name = "SimManager";
-		SimManager sm = simManager.AddComponent<SimManager>( ) as SimManager;
+	void BuildManager () {
+		GameObject manager = Instantiate (Resources.Load ("Empty")) as GameObject;
+		SimManager simManager = manager.AddComponent<SimManager> ();
+		manager.name = "SimManager";
 		ServerManager server = new ServerManager ();
-		sm.server = server;
-		server.simManager = sm;
+		server.simManager = simManager;
+		simManager.server = server;
 	}
 
 	void ReadCommands () {
