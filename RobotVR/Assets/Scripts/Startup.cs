@@ -4,9 +4,12 @@ using UnityEngine;
 
 public class Startup : MonoBehaviour {
 
+	SimManager simManager;
+
 	// Use this for initialization
 	void Start () {
 		BuildManager ();
+		BuildServer ();
 		ReadCommands ();
 	}
 	
@@ -19,6 +22,9 @@ public class Startup : MonoBehaviour {
 		GameObject manager = Instantiate (Resources.Load ("Empty")) as GameObject;
 		SimManager simManager = manager.AddComponent<SimManager> ();
 		manager.name = "SimManager";
+	}
+
+	void BuildServer (){
 		ServerManager server = new ServerManager ();
 		server.simManager = simManager;
 		simManager.server = server;
@@ -29,7 +35,9 @@ public class Startup : MonoBehaviour {
 		for (int i = 0; i < args.Length; i++) {
 			Debug.Log ("ARG " + i + ": " + args [i]);
 			if (args [i] == "-input") {
-				SimReader.read (args [i + 1]);
+				SimReader sr = new SimReader ();
+				sr.simManager = simManager;
+				sr.read (args [i + 1]);
 			}
 		}
 	}

@@ -14,7 +14,7 @@ public class ServerManager {
     int port = 8888;
     IPAddress localAddr = IPAddress.Parse("127.0.0.1");
 	Dictionary<TcpClient, string> conns = new Dictionary<TcpClient, string>();
-	Queue<string> pendingconns = new Queue<string>();
+	public Queue<string> pendingconns = new Queue<string>();
 
     byte[] recvBuf = new byte[1024];
 

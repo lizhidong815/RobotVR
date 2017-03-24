@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class SimReader {
+public class SimReader {
 
-	public static void read(string path) {
+	public SimManager simManager;
+
+	public void read(string path) {
 		IO io = new IO ();
 		if (!io.Load (path))
 			return;
@@ -26,10 +28,15 @@ public static class SimReader {
 		}
 	}
 
-	public static void process(string line, string parameters){
+	public void process(string line, string parameters){
 		switch (line) {
-		case "#body":
-			
+		case "#robot":
+			string[] args = parameters.Split (' ');
+			string id = simManager.newID ();
+			simManager.server.pendingconns.Enqueue (id);
+			/*build robot*/
+			/*run client*/
+
 			break;
 		default:
 			break;

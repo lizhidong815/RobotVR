@@ -8,7 +8,7 @@ public class SimManager : MonoBehaviour {
 	public Dictionary<string,Robot> robots;
 	public Robot currentRobot;
 	HashSet<string> IDs;
-
+	public Queue<Robot> pendingrobots;
 	// Use this for initialization
 
 	public void Start() {
