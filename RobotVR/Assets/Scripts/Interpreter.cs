@@ -8,7 +8,7 @@ public static class Interpreter{
 		/*
 		 * 
 		 * write code to unwrap the packet and use 
-		 * a switch function to perform correct function
+		 * a switch statement to perform correct function
 		 * return message in string form
 		 * 
 		 * 

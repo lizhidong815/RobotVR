@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SimReader {
+public class SimReader: MonoBehaviour {
 
 	public SimManager simManager;
 
@@ -17,24 +17,27 @@ public class SimReader {
 			//make sure line isnt blank
 			if (line.Length > 0) {
 				//check for hashtag
-				if (line [0] == '#') {
-					//read line below
-					string parameters = io.readLine ();
-					if (parameters == "ENDOFFILE")
-						break;
-					process (line, parameters);
+				if (line [0] != '#') {
+					process (line);
 				}
 			}
 		}
 	}
 
-	public void process(string line, string parameters){
-		switch (line) {
-		case "#robot":
-			string[] args = parameters.Split (' ');
+	public void process(string line){
+		string[] args = line.Split (' ');
+		print (args [0]);
+		switch (args[0]) {
+		case "robi":
 			string id = simManager.newID ();
 			simManager.server.pendingconns.Enqueue (id);
 			/*build robot*/
+			RobotBuilder rb = gameObject.AddComponent<RobotBuilder> ();
+			GameObject robot = rb.readRobi (args [1]);
+			Robot newrobot = robot.AddComponent<Robot> ();
+			newrobot.id = id;
+			robot.name = id;
+			simManager.robots.Add(id, newrobot);
 			/*run client*/
 
 			break;

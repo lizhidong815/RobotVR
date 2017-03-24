@@ -27,7 +27,7 @@ speed    600
 turn     300
 
 # the file name of the OpenInventor model used for this robi
-model    LabBot.ms3d
+model LabBot.ms3d
 
 # axis is the distance between the center of the robi and the center of
 # the robis axis, e.g. a value of 0 means the axis is in the center of

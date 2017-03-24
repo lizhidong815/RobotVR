@@ -2,26 +2,26 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LoadRobots{
+public class RobotLoader: MonoBehaviour{
+
+	public List<GameObject> robottypes;
 
 	// Use this for initialization
 	void Start () {
 		
 	}
 
-	public void buildRobots () {
+	public void LoadRobots () {
 		IO io = new IO();
 		List<string> filenames = io.getFileNames ("Robots", "*.robi");
 		filenames.Remove(".DS_Store");
+		RobotBuilder rb = gameObject.AddComponent<RobotBuilder> ();
 		foreach (string filename in filenames) {
-			RobotBuilder robotbuilder = new RobotBuilder ();
 			Debug.Log ("building " + filename);
-			robotbuilder.buildRobot (filename);
+			robottypes.Add(rb.readRobi (filename));
 		}
 	}
 
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
+
 }

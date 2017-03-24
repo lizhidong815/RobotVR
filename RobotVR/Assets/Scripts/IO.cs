@@ -17,11 +17,11 @@ public class IO{
 		return filenames;
 	}
 
-	public bool Load(string fileName) {
-		Debug.Log(Application.persistentDataPath + "/" + fileName);
+	public bool Load(string filePath) {
+		Debug.Log(filePath);
 		try {
 			//theReader = new StreamReader(Application.persistentDataPath + "/" + fileName, Encoding.Default);
-			theReader = new StreamReader(Application.dataPath + "/" + fileName, Encoding.Default);
+			theReader = new StreamReader(filePath, Encoding.Default);
 			return true;
 		} catch (System.Exception){
 			return false;

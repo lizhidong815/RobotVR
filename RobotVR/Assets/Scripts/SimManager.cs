@@ -6,18 +6,13 @@ public class SimManager : MonoBehaviour {
 
 	public ServerManager server;
 	public Dictionary<string,Robot> robots;
-	public Robot currentRobot;
 	HashSet<string> IDs;
-	public Queue<Robot> pendingrobots;
+
 	// Use this for initialization
 
 	public void Start() {
 		robots = new Dictionary<string,Robot> ();
-	}
-
-	public void AddRobot(string id) {
-		robots.Add (id, currentRobot);
-		currentRobot.id = id;
+		IDs = new HashSet<string> ();
 	}
 
 	public Robot GetRobot(string id) {
