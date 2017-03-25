@@ -33,7 +33,7 @@ public class SimReader: MonoBehaviour {
 			simManager.server.pendingconns.Enqueue (id);
 			/*build robot*/
 			RobotBuilder rb = gameObject.AddComponent<RobotBuilder> ();
-			GameObject robot = rb.readRobi (args [1]);
+			GameObject robot = rb.readRobi (ApplicationHelper.localDataPath + args [1]);
 			Robot newrobot = robot.AddComponent<Robot> ();
 			newrobot.id = id;
 			robot.name = id;

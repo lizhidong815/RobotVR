@@ -5,8 +5,9 @@ using UnityEngine;
 public class RobotBuilder: MonoBehaviour{
 
 	public GameObject robot;
-
+	public string filepath;
 	public GameObject readRobi (string filepath) {
+		this.filepath = filepath;
 		robot = Instantiate (Resources.Load ("Empty")) as GameObject;
 		IO io = new IO();
 		if (!io.Load (filepath))
@@ -39,10 +40,13 @@ public class RobotBuilder: MonoBehaviour{
 		}
 	}
 
-	void addModel(string[] arguments){
-		foreach (string s in arguments) {
+	void addModel(string[] args){
+		foreach (string s in args) {
 			print (s);
 		}
+		string modelpath = filepath.Substring (0, filepath.LastIndexOf ('/')) + "/" + args [1];
+		print (modelpath);
+		OBJLoader.LoadOBJFile(modelpath).transform.SetParent(robot.transform, false);
 	}
 
 
