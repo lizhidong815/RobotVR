@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Robot : MonoBehaviour {
-
-	public string id;
-	public List<PSD> psds;
+public class PSD : MonoBehaviour {
 
 	// Use this for initialization
-	public void Start () {
-		psds = new List<PSD> ();
+	void Start () {
+		
 	}
 	
 	// Update is called once per frame

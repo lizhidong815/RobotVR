@@ -12,14 +12,14 @@ public class RobotLoader: MonoBehaviour{
 	}
 
 	public void LoadRobots () {
-		IO io = new IO();
+		/*IO io = new IO();
 		List<string> filenames = io.getFileNames ("Robots", "*.robi");
 		filenames.Remove(".DS_Store");
 		RobotBuilder rb = gameObject.AddComponent<RobotBuilder> ();
 		foreach (string filename in filenames) {
 			Debug.Log ("building " + filename);
 			robottypes.Add(rb.readRobi (filename));
-		}
+		}*/
 	}
 
 
