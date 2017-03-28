@@ -4,7 +4,10 @@ using UnityEngine;
 
 public static class ApplicationHelper  {
 
-	public static string dataPath = Application.dataPath;
-	public static string appPath = Application.dataPath.Substring (0, Application.dataPath.LastIndexOf ('/'));
-	public static string localDataPath = "/Users/JoelFrewin/Documents/RobotVR/RobotVR-Mac";//appPath.Substring (0, appPath.LastIndexOf ('/'));
+	public static string localDataPath() {
+		string dataPath = Application.dataPath;
+		for(int i = 0; i<2; i++)
+			dataPath = dataPath.Substring (0, dataPath.LastIndexOf ('/'));
+		return Application.isEditor ? dataPath + "/RobotVR-Build" : dataPath;
+	}
 }

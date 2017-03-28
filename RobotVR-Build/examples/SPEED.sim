@@ -1,0 +1,5 @@
+# world description file (either one maze one world)
+world	%sim%/worlds/worlds/Soccer1998.wld
+
+# robi description file
+robi /robots/LabBot.robi speed.dll 750 600 0

@@ -46,7 +46,7 @@ public class Startup : MonoBehaviour {
 			//if (args [i] == "-input") {
 				SimReader sr = gameObject.AddComponent<SimReader> ();
 				sr.simManager = simManager;
-				sr.read (ApplicationHelper.localDataPath + "/examples/SPEED.sim");//args [i + 1]);
+				sr.read (ApplicationHelper.localDataPath() + "/examples/SPEED.sim");//args [i + 1]);
 			//}
 		}
 	}

@@ -7,7 +7,7 @@ public class test : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		GetComponent<Text> ().text = ApplicationHelper.localDataPath;
+		GetComponent<Text> ().text = ApplicationHelper.localDataPath();
 	}
 	
 	// Update is called once per frame
