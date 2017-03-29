@@ -7,6 +7,7 @@ public class SimManager : MonoBehaviour {
 	public ServerManager server;
 	public Dictionary<string,Robot> robots;
 	HashSet<string> IDs;
+	public GameObject world;
 
 	// Use this for initialization
 

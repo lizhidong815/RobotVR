@@ -41,6 +41,11 @@ public class SimReader: MonoBehaviour {
 			/*run client*/
 
 			break;
+		case "world":
+			WorldBuilder wb = gameObject.AddComponent<WorldBuilder> ();
+			simManager.world = wb.readWld (ApplicationHelper.localDataPath () + args [1]);
+			simManager.world.name = "world";
+			break;
 		default:
 			break;
 		}
