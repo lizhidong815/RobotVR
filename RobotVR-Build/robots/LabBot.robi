@@ -52,7 +52,7 @@ psd PSD_RIGHT 3 45 -27 40 -90
 camera	   40	  0	70	0	0	80	60
 
 # wheel diameter [mm], max. rotational velocity [deg/s], encoder ticks/rev., wheel-base distance [mm]
-wheel  45  3600  540  145
+wheel 45 3600 540 70
 
 # motors and encoders for low level drive routines
 # Diff.-drive: left motor, left encoder, right motor, right encoder
