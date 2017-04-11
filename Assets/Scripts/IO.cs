@@ -3,7 +3,7 @@ using System.IO;
 using UnityEngine;
 using System.Collections.Generic; 
 
-public class IO {
+public class IO{
 
 	StreamReader theReader;
 
@@ -20,6 +20,7 @@ public class IO {
 	public bool Load(string filePath) {
 		Debug.Log(filePath);
 		try {
+			//theReader = new StreamReader(Application.persistentDataPath + "/" + fileName, Encoding.Default);
 			theReader = new StreamReader(filePath, Encoding.Default);
 			return true;
 		} catch (System.Exception){

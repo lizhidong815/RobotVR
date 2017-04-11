@@ -32,7 +32,7 @@ model LabBot.obj
 # axis is the distance between the center of the robi and the center of
 # the robis axis, e.g. a value of 0 means the axis is in the center of
 # the robi, if no value is given, it is set to 0.
-axis     40
+axis 10
 
 # psd sensor definition:
 # id-num has to match file "hdt.h"

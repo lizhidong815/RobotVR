@@ -61,6 +61,10 @@ public class FileFinder : MonoBehaviour
 
     protected void FileSelectedCallback(string path)
     {
+        if(m_fileReceiver == null)
+        {
+            Debug.Log("Null file receiver");
+        }
         m_fileBrowser = null;
         m_textPath = path;
         if(m_textPath != null)

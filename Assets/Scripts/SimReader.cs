@@ -30,14 +30,13 @@ public class SimReader: MonoBehaviour {
 		switch (args[0]) {
 		case "robi":
 			string id = simManager.newID ();
-			simManager.server.pendingconns.Enqueue (id);
 			/*build robot*/
 			RobotBuilder rb = gameObject.AddComponent<RobotBuilder> ();
-			Robot robot = rb.ReceiveFile (ApplicationHelper.localDataPath() + args [1]).GetComponent<Robot>();
+			GameObject robot = rb.ReceiveFile (ApplicationHelper.localDataPath() + args [1]);
 			robot.transform.position = new Vector3 (float.Parse(args[3])/1000,0,float.Parse(args[4])/1000);
-			robot.id = id;
-			robot.name = id;
-			simManager.robots.Add(id, robot);
+			//robot.id = id;
+			//robot.name = id;
+			//simManager.robots.Add(id, robot);
 			/*run client*/
 
 			break;
