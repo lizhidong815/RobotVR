@@ -33,7 +33,7 @@ public class SimReader: MonoBehaviour {
 			simManager.server.pendingconns.Enqueue (id);
 			/*build robot*/
 			RobotBuilder rb = gameObject.AddComponent<RobotBuilder> ();
-			Robot robot = rb.readRobi (ApplicationHelper.localDataPath() + args [1]);
+			Robot robot = rb.ReceiveFile (ApplicationHelper.localDataPath() + args [1]).GetComponent<Robot>();
 			robot.transform.position = new Vector3 (float.Parse(args[3])/1000,0,float.Parse(args[4])/1000);
 			robot.id = id;
 			robot.name = id;
@@ -43,7 +43,7 @@ public class SimReader: MonoBehaviour {
 			break;
 		case "world":
 			WorldBuilder wb = gameObject.AddComponent<WorldBuilder> ();
-			simManager.world = wb.readWld (ApplicationHelper.localDataPath () + args [1]);
+			simManager.world = wb.ReceiveFile (ApplicationHelper.localDataPath () + args [1]);
 			simManager.world.name = "world";
 			break;
 		default:

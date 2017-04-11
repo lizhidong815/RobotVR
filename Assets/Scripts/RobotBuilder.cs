@@ -2,13 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RobotBuilder: MonoBehaviour{
+public class RobotBuilder: MonoBehaviour, IFileReceiver{
 
-	public Robot robot;
+    public static RobotBuilder instance { get; private set; }
+
+    public Robot robot;
 	public string filepath;
-	public Robot readRobi (string filepath) {
+
+    private void Awake()
+    {
+        if (instance == null || instance == this)
+            instance = this;
+        else
+            Destroy(this);
+    }
+
+    public GameObject ReceiveFile (string filepath) {
 		this.filepath = filepath;
-		GameObject robotobj = Instantiate (Resources.Load ("Empty")) as GameObject;
+        GameObject robotobj = new GameObject("newrobot");
 		robot = robotobj.AddComponent<Robot> ();
 		robot.Start ();
 		IO io = new IO();
@@ -27,7 +38,7 @@ public class RobotBuilder: MonoBehaviour{
 				}
 			}
 		}
-		return robot;
+		return robotobj;
 	}
 
 	public void process(string line){
@@ -49,11 +60,11 @@ public class RobotBuilder: MonoBehaviour{
 	}
 
 	void addModel(string[] args){
-		foreach (string s in args) {
-			print (s);
-		}
-		string modelpath = filepath.Substring (0, filepath.LastIndexOf ('/')) + "/" + args [1];
-		print (modelpath);
+
+        int lastIndex = filepath.LastIndexOf('/');
+        lastIndex = lastIndex < 0 ? filepath.LastIndexOf('\\') : lastIndex;
+        string modelpath = filepath.Substring (0, lastIndex) + "\\" + args [1];
+        Debug.Log("Loading Model: " + filepath);
 		GameObject model = OBJLoader.LoadOBJFile (modelpath);
 		model.transform.SetParent(robot.transform, false);
 		model.transform.rotation = Quaternion.Euler(0,90,0);

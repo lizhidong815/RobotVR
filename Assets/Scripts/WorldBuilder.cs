@@ -2,47 +2,59 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WorldBuilder : MonoBehaviour {
+public class WorldBuilder : MonoBehaviour, IFileReceiver
+{
+
+    public static WorldBuilder instance;
 
 	public GameObject world;
 	public string filepath;
 
-	public GameObject readWld (string filepath) {
-		this.filepath = filepath;
-		world = Instantiate (Resources.Load ("Empty")) as GameObject;
-		IO io = new IO();
-		if (!io.Load (filepath))
-			return null;
-		while (true) {
-			string line = io.readLine ();
-			if (line == "ENDOFFILE")
-				break;
-			//make sure line isnt blank
+    private void Awake()
+    {
+        if (instance == null)
+            instance = this;
+        else if (instance != null)
+            Destroy(this);
+    }
+
+    public GameObject ReceiveFile(string filepath) {
+        this.filepath = filepath;
+        world = new GameObject("World");
+        IO io = new IO();
+
+        if (!io.Load(filepath)) { 
+            Debug.Log("Failed to open world file");
+            return null;
+        }
+
+        string line;
+        while ((line = io.readLine()) != "ENDOFFILE") {
 			if (line.Length > 0) {
-				//check for hashtag
-				if (line [0] != '#') {
-					//read line below
-					process (line);
+				if (line[0] != '#') {
+					process(line);
 				}
 			}
 		}
+
 		return world;
 	}
 
-	public void process (string line){
-
+	void process (string line)
+    {
 		string[] args = line.Split (' ');
 		switch (args[0]) {
-		case "floor":
-			addFloor(args);
-			break;
-		default:
-			addWall (args);
-			break;
+		    case "floor":
+			    addFloor(args);
+			    break;
+		    default:
+			    addWall (args);
+			    break;
 		}
 	}
 
-	void addWall (string[] args) {
+	void addWall (string[] args)
+    {
 		GameObject floor = Instantiate(Resources.Load("Cube")) as GameObject;
 		Vector2 start = new Vector2(float.Parse(args[0])/1000, float.Parse(args[1])/1000);
 		Vector2 end = new Vector2(float.Parse(args[2])/1000, float.Parse(args[3])/1000);
@@ -52,7 +64,8 @@ public class WorldBuilder : MonoBehaviour {
 		floor.transform.SetParent (world.transform);
 	}
 
-	void addFloor (string[] args) {
+	void addFloor (string[] args)
+    {
 		GameObject floor = Instantiate(Resources.Load("Cube")) as GameObject;
 		floor.transform.localScale = new Vector3 (float.Parse(args[1])/1000,0.1f,float.Parse(args[2])/1000);
 		floor.transform.position = new Vector3 (float.Parse(args[1])/2000,-0.05f,float.Parse(args[2])/2000);

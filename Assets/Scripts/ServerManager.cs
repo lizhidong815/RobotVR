@@ -7,9 +7,12 @@ using System.IO;
 using System.Text;
 using System;
 
-public class ServerManager {
+// Singleton
+public class ServerManager : MonoBehaviour {
 
-	public SimManager simManager;
+    public static ServerManager instance { get; private set; }
+
+    private SimManager simManager;
     TcpListener listener = null;
     int port = 8888;
     IPAddress localAddr = IPAddress.Parse("127.0.0.1");
@@ -18,15 +21,27 @@ public class ServerManager {
 
     byte[] recvBuf = new byte[1024];
 
-    // Use this for initialization
-    public ServerManager () {
+    // Enfornce singleton
+    void Awake()
+    {
+        if (instance == null)
+            instance = this;
+        else if(instance != this)
+            Destroy(this);
+    }
+
+    // Initialize
+    public void Start()
+    {
+        simManager = GameObject.Find("Managers").GetComponent<SimManager>();
+
         listener = new TcpListener(localAddr, port);
         listener.Start();
         Debug.Log("Server Started");
-	}
+    }
 
-	// Update is called once per frame
-	public void Update () {
+    // Update is called once per frame
+    public void Update () {
         if (listener.Pending()) {
             TcpClient client = listener.AcceptTcpClient();
             Debug.Log("Accepted a connection");

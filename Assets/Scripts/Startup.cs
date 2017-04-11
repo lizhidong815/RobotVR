@@ -2,52 +2,61 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Startup : MonoBehaviour {
+public class Startup : MonoBehaviour
+{
 
-	SimManager simManager;
+    // Ensure startup is only ever ran once
+    private static bool doStartup = true;
 
-	// Use this for initialization
-	void Start () {
-		BuildManager ();
-		BuildServer ();
-		//LoadRobots ();
-		ReadCommands ();
-		Destroy (gameObject);
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    // Managers are instantiated in Awake
+    // This ensures valid references can 
+    // be obtained in Start
+    void Awake()
+    {
+        if (doStartup)
+            doStartup = false;
+        else
+            Destroy(this);
 
-	void BuildManager () {
-		GameObject manager = Instantiate (Resources.Load ("Empty")) as GameObject;
-		simManager = manager.AddComponent<SimManager> ();
-		simManager.Start ();
-		manager.name = "SimManager";
-		ServerManager server = new ServerManager ();
-		server.simManager = simManager;
-		simManager.server = server;
-	}
+        DontDestroyOnLoad(gameObject);
+    }
 
-	void BuildServer () {
-		
-	}
+    private void Start()
+    {
+        gameObject.AddComponent<SimManager>();
+        gameObject.AddComponent<ServerManager>();
+        gameObject.AddComponent<RobotBuilder>();
+        gameObject.AddComponent<WorldBuilder>();
+        gameObject.AddComponent<UIManager>();
+    }
 
-	void LoadRobots () {
-		gameObject.AddComponent<RobotLoader> ().LoadRobots ();
+    void BuildManager()
+    {
+       //
+    }
 
-	}
+    void BuildServer()
+    {
+        //
+    }
 
-	void ReadCommands () {
-		string[] args = System.Environment.GetCommandLineArgs ();
-		for (int i = 0; i < args.Length; i++) {
-			Debug.Log ("ARG " + i + ": " + args [i]);
-			//if (args [i] == "-input") {
-				SimReader sr = gameObject.AddComponent<SimReader> ();
-				sr.simManager = simManager;
-				sr.read (ApplicationHelper.localDataPath() + "/examples/SPEED.sim");//args [i + 1]);
-			//}
-		}
-	}
+    void LoadRobots()
+    {
+        //
+    }
+
+    public void ReadCommands()
+    {
+        string[] args = System.Environment.GetCommandLineArgs();
+        for (int i = 0; i < args.Length; i++)
+        {
+            Debug.Log("ARG " + i + ": " + args[i]);
+            if (args[i] == "-input")
+            {
+                //simReader = new SimReader();
+                //simReader.simManager = simManager;
+                //simReader.read(ApplicationHelper.localDataPath() + args[i + 1]);
+            }
+        }
+    }
 }

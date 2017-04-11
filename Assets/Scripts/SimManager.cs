@@ -4,14 +4,27 @@ using UnityEngine;
 
 public class SimManager : MonoBehaviour {
 
+    public static SimManager instance { get; private set; }
+   
+
 	public ServerManager server;
 	public Dictionary<string,Robot> robots;
 	HashSet<string> IDs;
 	public GameObject world;
 
-	// Use this for initialization
+    // Enforce singleton
+    public void Awake() 
+    {
+        if (instance == null)
+            instance = this;
+        else if (instance != this)
+            Destroy(this);
+    }
 
-	public void Start() {
+    // Use this for initialization
+    public void Start() {
+        server = gameObject.GetComponent<ServerManager>();
+
 		robots = new Dictionary<string,Robot> ();
 		IDs = new HashSet<string> ();
 	}
