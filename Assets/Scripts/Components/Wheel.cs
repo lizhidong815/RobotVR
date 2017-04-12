@@ -9,6 +9,7 @@ namespace RobotComponents
     {
         public WheelCollider wheel;
         public float speed;
+        public int encRevs;
 
         public bool pidEnabled = false;
         public int P;
