@@ -1,13 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using RobotComponents;
 
 public class RobotBuilder: MonoBehaviour, IFileReceiver{
 
     public static RobotBuilder instance = null;
-
+	public Robot robot;
+	public GameObject robotObject;
 	public string filepath;
-    private RobotFactory factory = null;
 
     private void Awake()
     {
@@ -19,17 +20,13 @@ public class RobotBuilder: MonoBehaviour, IFileReceiver{
 
     public GameObject ReceiveFile(string filepath)
     {
+		robotObject = new GameObject("Robot");
+		Rigidbody rb = robotObject.AddComponent<Rigidbody>();
+		rb.mass = 1500;
         this.filepath = filepath;
         IO io = new IO();
         if (!io.Load(filepath))
             return null;
-        if (factory != null)
-        {
-            Debug.Log("Robot creation already exists?");
-            return null;
-        }
-
-        factory = new RobotFactory();
         string line;
 
         while ( (line = io.readLine()) != "ENDOFFILE") {
@@ -39,7 +36,7 @@ public class RobotBuilder: MonoBehaviour, IFileReceiver{
 				}
 			}
 		}
-		return factory.robotObject;
+		return robotObject;
 	}
 
 	public void process(string line){
@@ -47,49 +44,139 @@ public class RobotBuilder: MonoBehaviour, IFileReceiver{
 		string[] args = line.Split (' ');
 		switch (args[0]) {
             case "name":
-                SetType(args);
+                SetType(args[1]);
                 break;
 		    case "model":
-			    addModel(args);
+			    addModel(args[1]);
 			    break;
             case "axis":
-                addAxel(args);
+				addAxel(float.Parse(args[1])/1000, float.Parse(args[2])/1000);
                 break;
 		    case "psd":
-			    addPSD(args);
+				Vector3 position = new Vector3 (-1*float.Parse(args[4])/1000,float.Parse(args[5])/1000,float.Parse(args[3])/1000);
+				Quaternion rotation = Quaternion.Euler (0, -1*float.Parse(args[6]), 0);
+				addPSD(args[1], args[2], position, rotation);
 			    break;
 		    case "wheel":
-			    addWheels (args);
+				addWheels(float.Parse (args [1]) / 1000f, float.Parse(args[2])/1000, int.Parse(args[3]), float.Parse (args [4]) / 1000f, 0);
 			    break;
 		    default:
 			    break;
 		}
 	}
 
-    void SetType(string[] args)
-    {
-        factory.RobotType(args[1]);
-    }
+	void addPSD(string name, string id, Vector3 position, Quaternion rotation) {
+		if(!(robot is IPSDSensors))
+		{
+			Debug.Log("Trying to add PSD to unsupported robot type");
+		}
+		else
+		{
+			Transform psdContainer = robotObject.transform.Find("PSDContainer");
+			if (psdContainer == null)
+				psdContainer = AddPSDContainer();
 
-	void addModel(string[] args)
-    {
-		string modelpath = filepath.Substring (0, filepath.LastIndexOf ('\\')) + "\\" + args [1];
-        factory.AddModel(modelpath);
+			GameObject psd = new GameObject(name);
+			psd.transform.SetParent(psdContainer, false);
+			psd.transform.localPosition = position;
+			psd.transform.localRotation = rotation;
+
+			PSDSensor sensor = psd.AddComponent<PSDSensor>();
+			(robot as LabBot).psdController.sensors.Add(sensor);
+		}
 	}
 
-    void addAxel(string[] args)
-    {
-        factory.AddAxel(float.Parse(args[1])/1000, 0);
-    }
-
-	void addPSD(string[] args)
-    {	
-	    Vector3 psdPos = new Vector3 (-1*float.Parse(args[4])/1000,float.Parse(args[5])/1000,float.Parse(args[3])/1000);
-		Quaternion psdRot = Quaternion.Euler (0, -1*float.Parse(args[6]), 0);
-        factory.AddPSD(args[1], int.Parse(args[2]), psdPos, psdRot);
+	public void SetType(string type)
+	{
+		switch (type)
+		{
+		case "LabBot":
+			robot = robotObject.AddComponent<LabBot>();
+			break;
+		default:
+			Debug.Log("Couldnt find robot type");
+			break;
+		}
 	}
 
-	void addWheels(string[] args){
-		factory.AddWheels(float.Parse (args [1]) / 1000f, float.Parse(args[2])/1000, int.Parse(args[3]), float.Parse (args [4]) / 1000f, 0);
+	public void addModel(string modelPath)
+	{
+
+		string fullpath = filepath.Substring (0, filepath.LastIndexOf (ApplicationHelper.slash())) + ApplicationHelper.slash() + modelPath;
+		GameObject model = OBJLoader.LoadOBJFile(fullpath);
+		model.transform.SetParent(robotObject.transform, false);
+		model.transform.rotation = Quaternion.Euler(0, 90, 0);
+
+		BoxCollider robCollider = robotObject.AddComponent<BoxCollider>();
+		robCollider.center = new Vector3(0, 0.1f, 0);
+		robCollider.size = new Vector3(0.18f, 0.195f, 0.2f);
+	}
+
+	public void AddCube()
+	{
+		robot = robotObject.AddComponent<LabBot>();
+		GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+		cube.transform.SetParent(robotObject.transform, false);
+		cube.transform.localScale = new Vector3(1, 1, 3);
+	}
+
+	private Transform AddPSDContainer()
+	{
+		GameObject psdContainer = new GameObject("PSDContainer");
+		psdContainer.transform.SetParent(robotObject.transform, false);
+		return psdContainer.transform;
+	}
+
+	private Transform AddWheelContainer()
+	{
+		GameObject wheelContainer = new GameObject("WheelContainer");
+		wheelContainer.transform.SetParent(robotObject.transform, false);
+		return wheelContainer.transform;
+	}
+
+	// Adds an axel (this is just a gameobject that represnets the 
+	// z (forwards/backwars) and y (up/down) locaation
+	public void addAxel(float z, float y)
+	{
+		GameObject axel = new GameObject("Axel" + robot.axels);
+		robot.axels++;
+		axel.transform.SetParent(robotObject.transform, false);
+		axel.transform.position = new Vector3(0, y, z);
+	}
+
+	// Add Wheels adds a pair of wheels on an axis
+	public void addWheels(float diameter, float vel, int enc, float wBase, int axel)
+	{
+		Transform axelTransform = robotObject.transform.FindChild("Axel" + axel);
+		if(axelTransform == null)
+		{
+			Debug.Log("Trying to attach wheels to a non existand axels");
+			return;
+		}
+		else
+		{
+			Object wheelPrefab = Resources.Load("WheelPrefab");
+			GameObject wheelLeft = Object.Instantiate(wheelPrefab, axelTransform, false) as GameObject;
+			wheelLeft.name = "leftwheel";
+			GameObject wheelRight = Object.Instantiate(wheelPrefab, axelTransform, false) as GameObject;
+			wheelRight.name = "rightwheel";
+
+			wheelLeft.transform.SetParent(axelTransform, false);
+			wheelRight.transform.SetParent(axelTransform, false);
+			wheelLeft.transform.localScale = new Vector3(diameter, diameter, diameter);
+			wheelRight.transform.localScale = new Vector3(diameter, diameter, diameter);
+			wheelLeft.transform.localPosition = new Vector3(-wBase, 0, 0);
+			wheelRight.transform.localPosition = new Vector3(wBase, 0, 0);
+
+			WheelInfo wheelLeftInfo = new WheelInfo();
+			wheelLeftInfo.wheel = wheelLeft.GetComponent<WheelCollider>();
+			wheelLeftInfo.speed = vel / 1000;
+			(robot as LabBot).wheelController.wheels.Add(wheelLeftInfo);
+
+			WheelInfo wheelRightInfo = new WheelInfo();
+			wheelRightInfo.wheel = wheelRight.GetComponent<WheelCollider>();
+			wheelRightInfo.speed = vel / 1000;
+			(robot as LabBot).wheelController.wheels.Add(wheelRightInfo);
+		}
 	}
 }
