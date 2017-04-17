@@ -26,7 +26,7 @@ namespace RobotCommands
     // Can be Driven (motor torque)
     public interface IMotorControl
     {
-        void SetMotorSpeed(int motor, int speed);
+        void SetMotorSpeed(int motor, float speed);
     }
 
     public interface IPIDControl

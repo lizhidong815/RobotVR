@@ -5,7 +5,7 @@ using UnityEngine;
 namespace RobotComponents
 {
     [System.Serializable]
-    public class WheelInfo
+    public class Wheel
     {
         public WheelCollider wheel;
         public float speed;

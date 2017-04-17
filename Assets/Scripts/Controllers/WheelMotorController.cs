@@ -8,13 +8,13 @@ public class WheelMotorController : MonoBehaviour,
     IMotorControl, 
     IPIDControl
 {
-    public List<WheelInfo> wheels; // the information about each individual wheel  
+    public List<Wheel> wheels; // the information about each individual wheel  
     public float maxMotorTorque; // maximum torque the motor can apply to wheel
     public float maxSteeringAngle; // maximum steer angle the wheel can have
-
+	public bool setmotor = false;
     private void Awake()
     {
-        wheels = new List<WheelInfo>();
+        wheels = new List<Wheel>();
     }
 
     // Set the local PID Parameters
@@ -26,7 +26,7 @@ public class WheelMotorController : MonoBehaviour,
         wheels[motor].D = d;
     }
     // Set the speed of a single motor
-    public void SetMotorSpeed(int motor, int speed)
+    public void SetMotorSpeed(int motor, float speed)
     {
         wheels[motor].speed = speed;
         wheels[motor].wheel.motorTorque = maxMotorTorque * speed;
@@ -64,7 +64,12 @@ public class WheelMotorController : MonoBehaviour,
     // Update visual of wheel on each frame
     public void FixedUpdate()
     {
-        foreach(WheelInfo wheel in wheels)
+		if (setmotor) {
+			SetMotorSpeed (0, 0.1f);
+			SetMotorSpeed (1, -0.1f);
+			setmotor = false;
+		}
+        foreach(Wheel wheel in wheels)
         {
             ApplyLocalPositionToVisuals(wheel.wheel);
         }

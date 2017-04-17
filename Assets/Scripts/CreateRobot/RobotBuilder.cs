@@ -110,6 +110,7 @@ public class RobotBuilder: MonoBehaviour, IFileReceiver{
 		BoxCollider robCollider = robotObject.AddComponent<BoxCollider>();
 		robCollider.center = new Vector3(0, 0.1f, 0);
 		robCollider.size = new Vector3(0.18f, 0.195f, 0.2f);
+		robCollider.material = Resources.Load ("nofriction") as PhysicMaterial;
 	}
 
 	public void AddCube()
@@ -156,27 +157,27 @@ public class RobotBuilder: MonoBehaviour, IFileReceiver{
 		else
 		{
 			Object wheelPrefab = Resources.Load("WheelPrefab");
-			GameObject wheelLeft = Object.Instantiate(wheelPrefab, axelTransform, false) as GameObject;
-			wheelLeft.name = "leftwheel";
-			GameObject wheelRight = Object.Instantiate(wheelPrefab, axelTransform, false) as GameObject;
-			wheelRight.name = "rightwheel";
+			GameObject wheelLeftObj = Object.Instantiate(wheelPrefab, axelTransform, false) as GameObject;
+			wheelLeftObj.name = "leftwheel";
+			GameObject wheelRightObj = Object.Instantiate(wheelPrefab, axelTransform, false) as GameObject;
+			wheelRightObj.name = "rightwheel";
 
-			wheelLeft.transform.SetParent(axelTransform, false);
-			wheelRight.transform.SetParent(axelTransform, false);
-			wheelLeft.transform.localScale = new Vector3(diameter, diameter, diameter);
-			wheelRight.transform.localScale = new Vector3(diameter, diameter, diameter);
-			wheelLeft.transform.localPosition = new Vector3(-wBase, 0, 0);
-			wheelRight.transform.localPosition = new Vector3(wBase, 0, 0);
+			wheelLeftObj.transform.SetParent(axelTransform, false);
+			wheelRightObj.transform.SetParent(axelTransform, false);
+			wheelLeftObj.transform.localScale = new Vector3(diameter, diameter, diameter);
+			wheelRightObj.transform.localScale = new Vector3(diameter, diameter, diameter);
+			wheelLeftObj.transform.localPosition = new Vector3(-wBase, 0, 0);
+			wheelRightObj.transform.localPosition = new Vector3(wBase, 0, 0);
 
-			WheelInfo wheelLeftInfo = new WheelInfo();
-			wheelLeftInfo.wheel = wheelLeft.GetComponent<WheelCollider>();
-			wheelLeftInfo.speed = vel / 1000;
-			(robot as LabBot).wheelController.wheels.Add(wheelLeftInfo);
+			Wheel wheelLeft = new Wheel();
+			wheelLeft.wheel = wheelLeftObj.GetComponent<WheelCollider>();
+			wheelLeft.speed = vel / 1000;
+			(robot as LabBot).wheelController.wheels.Add(wheelLeft);
 
-			WheelInfo wheelRightInfo = new WheelInfo();
-			wheelRightInfo.wheel = wheelRight.GetComponent<WheelCollider>();
-			wheelRightInfo.speed = vel / 1000;
-			(robot as LabBot).wheelController.wheels.Add(wheelRightInfo);
+			Wheel wheelRight = new Wheel();
+			wheelRight.wheel = wheelRightObj.GetComponent<WheelCollider>();
+			wheelRight.speed = vel / 1000;
+			(robot as LabBot).wheelController.wheels.Add(wheelRight);
 		}
 	}
 }
