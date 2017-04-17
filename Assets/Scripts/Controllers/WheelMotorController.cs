@@ -20,16 +20,12 @@ public class WheelMotorController : MonoBehaviour,
     // Set the local PID Parameters
     public void SetPIDParams(int motor, int p, int i, int d)
     {
-        wheels[motor].pidEnabled = true;
-        wheels[motor].P = p;
-        wheels[motor].I = i;
-        wheels[motor].D = d;
+		wheels [motor].SetPIDParams (p, i, d);
     }
     // Set the speed of a single motor
     public void SetMotorSpeed(int motor, float speed)
     {
-        wheels[motor].speed = speed;
-        wheels[motor].wheel.motorTorque = maxMotorTorque * speed;
+		wheels [motor].SetMotorSpeed (speed);
     }
 
     // Set the speed of a single motor (controlled)
@@ -43,35 +39,17 @@ public class WheelMotorController : MonoBehaviour,
         SetMotorSpeed(motor, ticks);
     }
 
-    // Function to update visuals of wheels
-    public void ApplyLocalPositionToVisuals(WheelCollider collider)
-    {
-        if (collider.transform.childCount == 0)
-        {
-            return;
-        }
-
-        Transform visualWheel = collider.transform.GetChild(0);
-
-        Vector3 position;
-        Quaternion rotation;
-        collider.GetWorldPose(out position, out rotation);
-
-        visualWheel.transform.position = position;
-        visualWheel.transform.rotation = rotation;
-    }
-
     // Update visual of wheel on each frame
     public void FixedUpdate()
     {
+		foreach (Wheel wheel in wheels){
+			wheel.FixedUpdate ();
+		}
 		if (setmotor) {
-			SetMotorSpeed (0, 0.1f);
-			SetMotorSpeed (1, -0.1f);
+			SetMotorSpeed (0, wheels[0].speed);
+			SetMotorSpeed (1, wheels[1].speed);
 			setmotor = false;
 		}
-        foreach(Wheel wheel in wheels)
-        {
-            ApplyLocalPositionToVisuals(wheel.wheel);
-        }
+		IO io = new IO ();
     }
 }
