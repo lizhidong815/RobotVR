@@ -38,18 +38,18 @@ public class WheelMotorController : MonoBehaviour,
 
         SetMotorSpeed(motor, ticks);
     }
-
     // Update visual of wheel on each frame
     public void FixedUpdate()
-    {
-		foreach (Wheel wheel in wheels){
+	{
+		foreach (Wheel wheel in wheels) {
 			wheel.FixedUpdate ();
 		}
 		if (setmotor) {
-			SetMotorSpeed (0, wheels[0].speed);
-			SetMotorSpeed (1, wheels[1].speed);
+			SetMotorSpeed (0, wheels [0].speed);
+			SetMotorSpeed (1, wheels [1].speed);
 			setmotor = false;
 		}
-		IO io = new IO ();
-    }
+	}
+
+
 }

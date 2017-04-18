@@ -59,7 +59,7 @@ public class RobotBuilder: MonoBehaviour, IFileReceiver{
 				addPSD(args[1], args[2], position, rotation);
 			    break;
 		    case "wheel":
-				addWheels(float.Parse (args [1]) / 1000f, float.Parse(args[2])/1000, int.Parse(args[3]), float.Parse (args [4]) / 1000f, 0);
+				addWheels(float.Parse (args [1]) / 1000f, float.Parse(args[2]), int.Parse(args[3]), float.Parse (args [4]) / 1000f, 0);
 			    break;
 		    default:
 			    break;
@@ -109,7 +109,7 @@ public class RobotBuilder: MonoBehaviour, IFileReceiver{
 		model.transform.rotation = Quaternion.Euler(0, 90, 0);
 
 		BoxCollider robCollider = robotObject.AddComponent<BoxCollider>();
-		robCollider.center = new Vector3(0, 0.1f, 0);
+		robCollider.center = new Vector3(0, 0.101f, 0);
 		robCollider.size = new Vector3(0.18f, 0.195f, 0.2f);
 		robCollider.material = Resources.Load ("nofriction") as PhysicMaterial;
 	}
@@ -170,14 +170,20 @@ public class RobotBuilder: MonoBehaviour, IFileReceiver{
 			wheelLeftObj.transform.localPosition = new Vector3(-wBase, 0, 0);
 			wheelRightObj.transform.localPosition = new Vector3(wBase, 0, 0);
 
-			Wheel wheelLeft = new Wheel();
-			wheelLeft.wheel = wheelLeftObj.GetComponent<WheelCollider>();
-			wheelLeft.speed = vel / 1000;
+			Wheel wheelLeft = wheelLeftObj.AddComponent<Wheel> ();
+			wheelLeft.rigidBody = wheelLeftObj.GetComponent<Rigidbody>();
+			wheelLeft.wheelHingeJoint = wheelLeftObj.GetComponent<HingeJoint>();
+			wheelLeft.GetComponent<HingeJoint>().connectedBody = robotObject.GetComponent<Rigidbody> ();
+			wheelLeft.wheelCollider = wheelLeftObj.GetComponent<CapsuleCollider>();
+			wheelLeft.speed = vel / 360;
 			(robot as LabBot).wheelController.wheels.Add(wheelLeft);
 
-			Wheel wheelRight = new Wheel();
-			wheelRight.wheel = wheelRightObj.GetComponent<WheelCollider>();
-			wheelRight.speed = vel / 1000;
+			Wheel wheelRight = wheelRightObj.AddComponent<Wheel> ();
+			wheelRight.rigidBody = wheelRightObj.GetComponent<Rigidbody>();
+			wheelRight.wheelHingeJoint = wheelRightObj.GetComponent<HingeJoint>();
+			wheelRight.GetComponent<HingeJoint>().connectedBody = robotObject.GetComponent<Rigidbody> ();
+			wheelRight.wheelCollider = wheelRightObj.GetComponent<CapsuleCollider>();
+			wheelRight.speed = vel / 360;
 			(robot as LabBot).wheelController.wheels.Add(wheelRight);
 		}
 	}

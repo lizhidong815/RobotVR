@@ -15,13 +15,10 @@ public static class ApplicationHelper  {
 		switch(Application.platform){
 		case RuntimePlatform.WindowsEditor:
 			return "\\";
-			break;
 		case RuntimePlatform.WindowsPlayer:
 			return "\\";
-			break;
 		default:
 			return "/";
-			break;
 		}
 	}
 }
