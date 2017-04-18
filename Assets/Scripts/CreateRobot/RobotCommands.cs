@@ -35,6 +35,12 @@ namespace RobotCommands
         void SetPIDParams(int motor, int p, int i, int d);
     }
 
+	public interface ICamera
+	{
+		byte[] GetBytes (int camera);
+	}
+
+
     public interface IVWControl
     {
         void Initialize(int tick, int bs, int max, int dir);

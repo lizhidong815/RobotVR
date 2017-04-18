@@ -14,6 +14,11 @@ public interface IMotors
     void DriveMotor(int[] args);
 }
 
+public interface ICamera
+{
+	
+}
+
 public interface IPIDUsable
 {
     void DriveMotorControlled(int[] args);
