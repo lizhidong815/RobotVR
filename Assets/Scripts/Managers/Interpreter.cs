@@ -141,9 +141,9 @@ public class Interpreter {
     // Get Camera
     private void Command_f(byte[] recv, RobotConnection conn)
     {
-        if (conn.robot is ICamera)
+        if (conn.robot is ICameras)
         {
-            byte[] img = (conn.robot as ICamera).GetBytes(0);
+            byte[] img = (conn.robot as ICameras).GetCameraOutput(0);
             Debug.Log("Image Size: " + img.Length);
             Packet packet = new Packet();
             packet.packetType = PacketType.SERVER_CAMIMG;

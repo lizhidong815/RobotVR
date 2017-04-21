@@ -13,5 +13,6 @@ public static class PacketType  {
     public const byte CLIENT_STOP = 8;
     public const byte SERVER_MESSAGE = 9;
     public const byte CLIENT_MESSAGE = 10;
-
+    public const byte SERVER_CAMIMG = 11;
+    public const byte CLIENT_CAMGET = 12;
 }
