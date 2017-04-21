@@ -10,7 +10,8 @@ public class LabBot : Robot,
     IPosable,
     IPSDSensors,
     IServoSettable,
-    IVWDrivable
+    IVWDrivable,
+    ICameras
 {
     // Available Commands
     ICommand<int[]> driveMotor;
@@ -22,12 +23,15 @@ public class LabBot : Robot,
     // Returning commands need to have concrete type
     GetVehiclePoseCommand getPose;
     GetPSDSensorValueCommand getPsd;
+    GetCameraOutputCommand getCamOut;
+    
 
     // Controllers
     public WheelMotorController wheelController;
     public PoseController poseController;
     public PSDController psdController;
     public ServoController servoController;
+    public EyeCameraController eyeCamController;
 
     // Initialize controllers
     public LabBot()
@@ -42,6 +46,7 @@ public class LabBot : Robot,
         poseController = gameObject.AddComponent<PoseController>();
         psdController = gameObject.AddComponent<PSDController>();
         servoController = gameObject.AddComponent<ServoController>();
+        eyeCamController = gameObject.AddComponent<EyeCameraController>();
 
         driveMotor = new MotorDriveCommand(wheelController);
         driveMotorControlled = new MotorDriveControlledCommand(wheelController);
@@ -50,11 +55,13 @@ public class LabBot : Robot,
         getPose = new GetVehiclePoseCommand(poseController);
         setServo = new SetServoCommand(servoController);
         getPsd = new GetPSDSensorValueCommand(psdController);
+        getCamOut = new GetCameraOutputCommand(eyeCamController);
     }
 
     void Start()
     {
-
+        if(this is IMotors)
+            Debug.Log("Im Drivable!!!!");
     }
 
     public void DriveMotor(int[] args)
@@ -139,6 +146,17 @@ public class LabBot : Robot,
     }
 
     public void SetVWParams(int[] args)
+    {
+        throw new NotImplementedException();
+    }
+
+    public byte[] GetCameraOutput(int camera)
+    {
+        getCamOut.Execute(camera);
+        return getCamOut.img;
+    }
+
+    public void SetCameraResolution(int camera)
     {
         throw new NotImplementedException();
     }

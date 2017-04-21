@@ -374,4 +374,20 @@ namespace RobotCommands
             remaining = _vwDrivable.DriveDone();
         }
     }
+
+    public class GetCameraOutputCommand : ICommand<int>
+    {
+        private readonly ICamera _cameraControl;
+        public byte[] img { get; private set; }
+
+        public GetCameraOutputCommand(ICamera cameraControl)
+        {
+            _cameraControl = cameraControl;
+        }
+
+        public void Execute(int args)
+        {
+            _cameraControl.GetBytes(args);
+        }
+    }
 }

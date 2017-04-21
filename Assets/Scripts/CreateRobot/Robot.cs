@@ -14,11 +14,6 @@ public interface IMotors
     void DriveMotor(int[] args);
 }
 
-public interface ICamera
-{
-	
-}
-
 public interface IPIDUsable
 {
     void DriveMotorControlled(int[] args);
@@ -51,6 +46,12 @@ public interface IServoSettable
 public interface IPSDSensors
 {
     UInt16 GetPSD(int args);
+}
+
+public interface ICameras
+{
+    byte[] GetCameraOutput(int camera);
+    void SetCameraResolution(int camera);
 }
 
 // Abstract robot

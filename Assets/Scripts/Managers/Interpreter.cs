@@ -79,11 +79,13 @@ public class Interpreter {
             {
                 Array.Reverse(value);
             }
-            byte[] msg = new byte[3];
-            msg[0] = 0x3E;
-            value.CopyTo(msg, 1);
+            Packet packet = new Packet();
+            packet.packetType = PacketType.SERVER_MESSAGE;
+            packet.dataSize = 2;
+            packet.data = new byte[2];
+            value.CopyTo(packet.data, 0);
             Debug.Log("PSD Sensor Value: " + value);
-            serverManager.WriteRaw(conn, msg, 3);
+            serverManager.WritePacket(conn, packet);
         }
         else
         {
@@ -103,7 +105,7 @@ public class Interpreter {
             Debug.Log("Requested pose from a non posable robot");
         }
     }
-
+    // Get Pose
     private void Command_Q(byte[] recv, RobotConnection conn)
     {
         if (conn.robot is IPosable)
@@ -118,27 +120,42 @@ public class Interpreter {
             Debug.Log("Requested pose from a non posable robot");
         }
     }
-    
+    // Drive Done
     private void Command_Z(byte[] recv, RobotConnection conn)
     {
         if(conn.robot is IVWDrivable)
         {
             bool done =(conn.robot as IVWDrivable).VWDriveDone();
-            byte[] msg = new byte[2];
-            msg[0] = 0x3E;
-            msg[1] = Convert.ToByte(done);
-            serverManager.WriteRaw(conn, msg, 2);
-            //Packet p = new Packet();
-            //p.packetType = PacketType.SERVER_MESSAGE;
-            //p.dataSize = 1;
-            //p.data = BitConverter.GetBytes(done);
-            //Debug.Log("Writing packet");
-            //serverManager.WritePacket(conn, p);
+            Packet p = new Packet();
+            p.packetType = PacketType.SERVER_MESSAGE;
+            p.dataSize = 1;
+            p.data = BitConverter.GetBytes(done);
+            Debug.Log("Writing packet");
+            serverManager.WritePacket(conn, p);
         }
         else
         { 
             Debug.Log("Requested drive done from a non VW drivable robot");
         }
+    }
+    // Get Camera
+    private void Command_f(byte[] recv, RobotConnection conn)
+    {
+        if (conn.robot is ICamera)
+        {
+            byte[] img = (conn.robot as ICamera).GetBytes(0);
+            Debug.Log("Image Size: " + img.Length);
+            Packet packet = new Packet();
+            packet.packetType = PacketType.SERVER_CAMIMG;
+            packet.dataSize = (UInt32)img.Length;
+            packet.data = img;
+            serverManager.WritePacket(conn, packet);
+        }
+    }
+    // Set Camera
+    private void Command_F(byte[] recv, RobotConnection conn)
+    {
+
     }
 
     public void ReceiveCommand(byte[] recv, RobotConnection conn)
@@ -169,6 +186,12 @@ public class Interpreter {
                 break;
             case 'Z':
                 Command_Z(recv, conn);
+                break;
+            case 'f':
+                Command_f(recv, conn);
+                break;
+            case 'F':
+                Command_F(recv, conn);
                 break;
             default:
                 Debug.Log("Received an unknown command.");

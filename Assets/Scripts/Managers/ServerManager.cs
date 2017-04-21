@@ -52,7 +52,6 @@ public class ServerManager : MonoBehaviour
     int port = 8888;
     IPAddress localAddr = IPAddress.Parse("127.0.0.1");
     
-
     public Interpreter interpreter;
 
     byte[] recvBuf = new byte[1024];
@@ -66,27 +65,6 @@ public class ServerManager : MonoBehaviour
             Debug.Log("Failed to remove connection");
     }
 
-    // Check each open connection every 5 seconds
-    private IEnumerator CheckConnections()
-    {
-        while (true)
-        {
-            foreach (RobotConnection conn in conns)
-            {
-                if (conn.tcpClient.Client.Poll(0, SelectMode.SelectRead))
-                {
-                    byte[] buf = new byte[1];
-                    if (conn.tcpClient.Client.Receive(buf, SocketFlags.Peek) == 0)
-                    {
-                        Debug.Log("Connection lost");
-                        CloseConnection(conn);
-                        break;
-                    }
-                }
-            }
-            yield return new WaitForSeconds(5);
-        }
-    }
 
     // Accept a pending connection
     private void AcceptConnection()
@@ -110,16 +88,19 @@ public class ServerManager : MonoBehaviour
         if (BitConverter.IsLittleEndian)
             dataSize = RobotFunction.ReverseBytes(dataSize);
         int packetType = recvBuf[0];
-        Debug.Log("Packet Type: " + recvBuf[0] + " Packet Size: " + (uint)dataSize);
 
         // Read Body
         if (dataSize > 0)
         {
             bytesRead = stream.Read(recvBuf, 0, (int)dataSize);
-            if (packetType == 10)
-            {
+        }
+
+        switch(packetType){
+            case PacketType.CLIENT_MESSAGE:
                 interpreter.ReceiveCommand(recvBuf, conn);
-            }
+                break;
+            default:
+                break;
         }
     }
 
@@ -178,6 +159,28 @@ public class ServerManager : MonoBehaviour
             NetworkStream stream = conn.tcpClient.GetStream();
             if (stream.DataAvailable)
                 ReadPacket(conn);
+        }
+    }
+
+    // Check each open connection every 5 seconds
+    private IEnumerator CheckConnections()
+    {
+        while (true)
+        {
+            foreach (RobotConnection conn in conns)
+            {
+                if (conn.tcpClient.Client.Poll(0, SelectMode.SelectRead))
+                {
+                    byte[] buf = new byte[1];
+                    if (conn.tcpClient.Client.Receive(buf, SocketFlags.Peek) == 0)
+                    {
+                        Debug.Log("Connection lost");
+                        CloseConnection(conn);
+                        break;
+                    }
+                }
+            }
+            yield return new WaitForSeconds(5);
         }
     }
 }
