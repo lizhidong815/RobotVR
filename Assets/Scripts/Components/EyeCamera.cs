@@ -10,20 +10,24 @@ namespace RobotComponents
     {
 
         public float value = 0;
-		new public Camera camera;
+		public Camera cameraComponent;
+		public Texture2D tex;
 
         // Calculate sensor values at each frame
 		public byte[] GetBytes(){
-			return GetScreenshot ().GetRawTextureData ();
+			return tex.GetRawTextureData ();
 		}
 
-		Texture2D GetScreenshot()
-		{
-			Rect viewRect = camera.pixelRect;
-			Texture2D tex = new Texture2D( (int)viewRect.width, (int)viewRect.height, TextureFormat.RGB24, false );
-			tex.ReadPixels( viewRect, 0, 0, false );
+		void OnPostRender() {
+			RenderTexture target = cameraComponent.targetTexture;
+			if (target == null) {
+				print("no target texture");
+				return;
+			}
+			tex = new Texture2D( target.width, target.height, TextureFormat.RGB24, false );
+			Rect rect = new Rect( 0, 0, target.width, target.height );
+			tex.ReadPixels( rect, 0, 0, false );
 			tex.Apply( false );
-			return tex;
 		}
     }
 }

@@ -181,7 +181,7 @@ public class RobotBuilder: MonoBehaviour, IFileReceiver{
 			wheelLeft.wheelHingeJoint = wheelLeftObj.GetComponent<HingeJoint>();
 			wheelLeft.GetComponent<HingeJoint>().connectedBody = robotObject.GetComponent<Rigidbody> ();
 			wheelLeft.wheelCollider = wheelLeftObj.GetComponent<CapsuleCollider>();
-			wheelLeft.speed = vel / 360;
+			wheelLeft.speed = 0;
 			(robot as LabBot).wheelController.wheels.Add(wheelLeft);
 
 			Wheel wheelRight = wheelRightObj.AddComponent<Wheel> ();
@@ -189,7 +189,7 @@ public class RobotBuilder: MonoBehaviour, IFileReceiver{
 			wheelRight.wheelHingeJoint = wheelRightObj.GetComponent<HingeJoint>();
 			wheelRight.GetComponent<HingeJoint>().connectedBody = robotObject.GetComponent<Rigidbody> ();
 			wheelRight.wheelCollider = wheelRightObj.GetComponent<CapsuleCollider>();
-			wheelRight.speed = vel / 360;
+			wheelRight.speed = 0;
 			(robot as LabBot).wheelController.wheels.Add(wheelRight);
 		}
 	}
@@ -212,6 +212,7 @@ public class RobotBuilder: MonoBehaviour, IFileReceiver{
 			camera.transform.localRotation = Quaternion.Euler (tilt, pan, 0);
 
 			EyeCamera eyecamera = camera.AddComponent<EyeCamera>();
+			eyecamera.cameraComponent = camera.GetComponent<Camera>();
 			(robot as LabBot).eyeCamController.cameras.Add (eyecamera);
 		}
 	}
