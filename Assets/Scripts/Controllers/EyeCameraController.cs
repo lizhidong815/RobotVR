@@ -5,7 +5,7 @@ using UnityEngine;
 using RobotComponents;
 using RobotCommands;
 
-public class EyeCameraController : MonoBehaviour, ICamera {
+public class EyeCameraController : MonoBehaviour, ICameraControl {
 
     public List<EyeCamera> cameras;
 

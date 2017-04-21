@@ -48,7 +48,7 @@ public interface IPSDSensors
     UInt16 GetPSD(int args);
 }
 
-public interface ICameras
+public interface HasCameras
 {
     byte[] GetCameraOutput(int camera);
     void SetCameraResolution(int camera);

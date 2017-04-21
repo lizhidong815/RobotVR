@@ -35,7 +35,7 @@ namespace RobotCommands
         void SetPIDParams(int motor, int p, int i, int d);
     }
 
-	public interface ICamera
+	public interface ICameraControl
 	{
 		byte[] GetBytes (int camera);
 	}
@@ -377,10 +377,10 @@ namespace RobotCommands
 
     public class GetCameraOutputCommand : ICommand<int>
     {
-        private readonly ICamera _cameraControl;
+		private readonly ICameraControl _cameraControl;
         public byte[] img { get; private set; }
 
-        public GetCameraOutputCommand(ICamera cameraControl)
+        public GetCameraOutputCommand(ICameraControl cameraControl)
         {
             _cameraControl = cameraControl;
         }

@@ -11,7 +11,7 @@ public class LabBot : Robot,
     IPSDSensors,
     IServoSettable,
     IVWDrivable,
-    ICameras
+    HasCameras
 {
     // Available Commands
     ICommand<int[]> driveMotor;

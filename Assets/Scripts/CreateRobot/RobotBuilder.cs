@@ -61,6 +61,10 @@ public class RobotBuilder: MonoBehaviour, IFileReceiver{
 		    case "wheel":
 				addWheels(float.Parse (args [1]) / 1000f, float.Parse(args[2]), int.Parse(args[3]), float.Parse (args [4]) / 1000f, 0);
 			    break;
+			case "camera":
+				addCamera(new Vector3(float.Parse (args [2]) / 1000f, float.Parse (args [3]) / 1000f, float.Parse (args [1]) / 1000f), 
+						float.Parse (args [4]), float.Parse (args [5]), int.Parse (args [6]), int.Parse (args [7]));
+				break;
 		    default:
 			    break;
 		}
@@ -86,6 +90,8 @@ public class RobotBuilder: MonoBehaviour, IFileReceiver{
 			(robot as LabBot).psdController.sensors.Add(sensor);
 		}
 	}
+
+
 
 	public void SetType(string type)
 	{
@@ -186,5 +192,33 @@ public class RobotBuilder: MonoBehaviour, IFileReceiver{
 			wheelRight.speed = vel / 360;
 			(robot as LabBot).wheelController.wheels.Add(wheelRight);
 		}
+	}
+
+	public void addCamera(Vector3 position, float pan, float tilt, int imageWidth, int imageHeight) {
+		if(!(robot is HasCameras))
+		{
+			Debug.Log("Trying to add Camera to unsupported robot type");
+		}
+		else
+		{
+			Transform CameraContainer = robotObject.transform.Find("CameraContainer");
+			if (CameraContainer == null)
+				CameraContainer = AddCameraContainer();
+
+			Object cameraPrefab = Resources.Load("CameraPrefab");
+			GameObject camera = Object.Instantiate(cameraPrefab) as GameObject;
+			camera.transform.SetParent(CameraContainer, false);
+			camera.transform.localPosition = position;
+			camera.transform.localRotation = Quaternion.Euler (tilt, pan, 0);
+
+			EyeCamera eyecamera = camera.AddComponent<EyeCamera>();
+			(robot as LabBot).eyeCamController.cameras.Add (eyecamera);
+		}
+	}
+
+	public Transform AddCameraContainer() {
+		GameObject cameraContainer = new GameObject("CameraContainer");
+		cameraContainer.transform.SetParent(robotObject.transform, false);
+		return cameraContainer.transform;
 	}
 }
