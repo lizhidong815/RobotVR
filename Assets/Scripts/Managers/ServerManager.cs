@@ -106,7 +106,7 @@ public class ServerManager : MonoBehaviour
 
     internal void WritePacket(RobotConnection conn, Packet packet)
     {
-        byte[] sendBuf = new byte[1024];
+        byte[] sendBuf = new byte[packet.dataSize + 5];
         UInt32 size = packet.dataSize;
 
         if (BitConverter.IsLittleEndian)
@@ -133,6 +133,7 @@ public class ServerManager : MonoBehaviour
         else if (instance != this)
             Destroy(gameObject);
         interpreter = new Interpreter();
+        interpreter.serverManager = this;
         listener = new TcpListener(localAddr, port);
         listener.Start();
         StartCoroutine(CheckConnections());

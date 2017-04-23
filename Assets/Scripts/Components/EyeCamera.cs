@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using RobotCommands;
 using RobotComponents;
+
 
 namespace RobotComponents
 {
@@ -13,21 +15,42 @@ namespace RobotComponents
 		public Camera cameraComponent;
 		public Texture2D tex;
 
-        // Calculate sensor values at each frame
-		public byte[] GetBytes(){
-			return tex.GetRawTextureData ();
-		}
+        private RenderTexture rendTex;
 
+        private void Awake()
+        {
+            rendTex = new RenderTexture(160,120,16);           
+        }
+
+        private void Start()
+        {
+            cameraComponent = GetComponent<Camera>();
+            cameraComponent.targetTexture = rendTex;
+        }
+
+        // Need to reverse the order of the rows. RoBIOS uses top left
+        // corner as (0,0), Unity uses bottom left.
+        public byte[] GetBytes(){
+            byte[] camOut = tex.GetRawTextureData();
+            byte[] imgArray = new byte[camOut.Length];
+            Debug.Log("camOut lenght" + camOut.Length);
+
+            for (int i = 1; i <= rendTex.height; i++)
+            {
+                Array.Copy(camOut, camOut.Length - i * (rendTex.width * 3), imgArray, (i - 1) * (rendTex.width * 3), rendTex.width * 3);
+            }
+            return imgArray;
+        }
+
+        // Determine camera output at each frame
 		void OnPostRender() {
-			RenderTexture target = cameraComponent.targetTexture;
-			if (target == null) {
-				print("no target texture");
-				return;
-			}
-			tex = new Texture2D( target.width, target.height, TextureFormat.RGB24, false );
-			Rect rect = new Rect( 0, 0, target.width, target.height );
+            RenderTexture.active = rendTex;
+			tex = new Texture2D(rendTex.width, rendTex.height, TextureFormat.RGB24, false );
+			Rect rect = new Rect( 0, 0, rendTex.width, rendTex.height );
 			tex.ReadPixels( rect, 0, 0, false );
 			tex.Apply( false );
+            RenderTexture.active = null;
 		}
+        //TODO: Add function to change resolution (set via RenderTexture dimensions)
     }
 }

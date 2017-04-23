@@ -387,7 +387,7 @@ namespace RobotCommands
 
         public void Execute(int args)
         {
-            _cameraControl.GetBytes(args);
+           img = _cameraControl.GetBytes(args);
         }
     }
 }

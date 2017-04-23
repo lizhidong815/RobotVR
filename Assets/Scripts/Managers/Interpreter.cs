@@ -130,7 +130,6 @@ public class Interpreter {
             p.packetType = PacketType.SERVER_MESSAGE;
             p.dataSize = 1;
             p.data = BitConverter.GetBytes(done);
-            Debug.Log("Writing packet");
             serverManager.WritePacket(conn, p);
         }
         else
@@ -144,7 +143,6 @@ public class Interpreter {
         if (conn.robot is HasCameras)
         {
             byte[] img = (conn.robot as HasCameras).GetCameraOutput(0);
-            Debug.Log("Image Size: " + img.Length);
             Packet packet = new Packet();
             packet.packetType = PacketType.SERVER_CAMIMG;
             packet.dataSize = (UInt32)img.Length;
