@@ -182,6 +182,7 @@ public class RobotBuilder: MonoBehaviour, IFileReceiver{
 			wheelLeft.GetComponent<HingeJoint>().connectedBody = robotObject.GetComponent<Rigidbody> ();
 			wheelLeft.wheelCollider = wheelLeftObj.GetComponent<CapsuleCollider>();
 			wheelLeft.speed = 0;
+			wheelLeft.diameter = diameter;
 			(robot as LabBot).wheelController.wheels.Add(wheelLeft);
 
 			Wheel wheelRight = wheelRightObj.AddComponent<Wheel> ();
@@ -190,7 +191,10 @@ public class RobotBuilder: MonoBehaviour, IFileReceiver{
 			wheelRight.GetComponent<HingeJoint>().connectedBody = robotObject.GetComponent<Rigidbody> ();
 			wheelRight.wheelCollider = wheelRightObj.GetComponent<CapsuleCollider>();
 			wheelRight.speed = 0;
+			wheelRight.diameter = diameter;
 			(robot as LabBot).wheelController.wheels.Add(wheelRight);
+
+			(robot as LabBot).wheelController.wheelDist = wBase * 2;
 		}
 	}
 

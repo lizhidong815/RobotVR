@@ -15,6 +15,7 @@ namespace RobotComponents
 		public float tickrate;
 		public float currentrotation;
 		public int encoderRate = 540;
+		public float diameter;
 
         public bool pidEnabled = false;
         public int P;
@@ -43,8 +44,8 @@ namespace RobotComponents
 
 		public void updateRotation(){
 			float deltaAngle = GetComponent<HingeJoint>().angle - currentrotation;
-			if (Mathf.Abs (deltaAngle) > 270) deltaAngle = (deltaAngle - 360) * Mathf.Sign(deltaAngle);
-			tickrate = deltaAngle * encoderRate / 360;
+			if (Mathf.Abs (deltaAngle) < 20)
+				tickrate = deltaAngle * encoderRate / 360;
 
 			ticks += tickrate;
 			currentrotation = GetComponent<HingeJoint>().angle;
