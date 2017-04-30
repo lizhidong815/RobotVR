@@ -51,7 +51,7 @@ public interface IPSDSensors
 public interface HasCameras
 {
     byte[] GetCameraOutput(int camera);
-    void SetCameraResolution(int camera);
+    void SetCameraResolution(int[] args);
 }
 
 // Abstract robot

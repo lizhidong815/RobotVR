@@ -38,6 +38,7 @@ namespace RobotCommands
 	public interface ICameraControl
 	{
 		byte[] GetBytes (int camera);
+        void SetResolution(int camera, int width, int height);
 	}
 
 
@@ -389,5 +390,24 @@ namespace RobotCommands
         {
            img = _cameraControl.GetBytes(args);
         }
+    }
+
+    public class SetCameraResolutionCommand : ICommand<int[]>
+    {
+        private readonly ICameraControl _cameraControl;
+        
+        public SetCameraResolutionCommand(ICameraControl cameraControl)
+        {
+            _cameraControl = cameraControl;
+        }
+
+        public void Execute(int[] args)
+        {
+            // 0 : camera
+            // 1 : width
+            // 2 : height
+            _cameraControl.SetResolution(args[0], args[1], args[2]);
+        }
+           
     }
 }

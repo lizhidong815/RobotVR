@@ -18,4 +18,9 @@ public class EyeCameraController : MonoBehaviour, ICameraControl {
     {   
 		return cameras [camera].GetBytes ();
     }
+
+    public void SetResolution(int camera, int width, int height)
+    {
+        cameras[camera].SetResolution(width, height);
+    }
 }

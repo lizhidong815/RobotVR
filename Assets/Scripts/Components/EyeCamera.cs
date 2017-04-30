@@ -30,10 +30,10 @@ namespace RobotComponents
 
         // Need to reverse the order of the rows. RoBIOS uses top left
         // corner as (0,0), Unity uses bottom left.
-        public byte[] GetBytes(){
+        public byte[] GetBytes()
+        {
             byte[] camOut = tex.GetRawTextureData();
             byte[] imgArray = new byte[camOut.Length];
-            Debug.Log("camOut lenght" + camOut.Length);
 
             for (int i = 1; i <= rendTex.height; i++)
             {
@@ -42,8 +42,17 @@ namespace RobotComponents
             return imgArray;
         }
 
+        // Change the resolution of the renderer
+        public void SetResolution(int width, int height)
+        {
+            Debug.Log("Set Resolution: " + width + "x" + height);
+            rendTex = new RenderTexture(width, height, 16);
+            cameraComponent.targetTexture = rendTex;
+        }
+
         // Determine camera output at each frame
-		void OnPostRender() {
+		void OnPostRender()
+        {
             RenderTexture.active = rendTex;
 			tex = new Texture2D(rendTex.width, rendTex.height, TextureFormat.RGB24, false );
 			Rect rect = new Rect( 0, 0, rendTex.width, rendTex.height );
@@ -51,6 +60,5 @@ namespace RobotComponents
 			tex.Apply( false );
             RenderTexture.active = null;
 		}
-        //TODO: Add function to change resolution (set via RenderTexture dimensions)
     }
 }

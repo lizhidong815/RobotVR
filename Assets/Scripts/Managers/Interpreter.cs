@@ -153,7 +153,14 @@ public class Interpreter {
     // Set Camera
     private void Command_F(byte[] recv, RobotConnection conn)
     {
-
+        if(conn.robot is HasCameras)
+        {
+            int[] inputs = new int[3];
+            inputs[0] = recv[1] - 1;
+            inputs[1] = IPAddress.NetworkToHostOrder(BitConverter.ToInt16(recv, 2));
+            inputs[2] = IPAddress.NetworkToHostOrder(BitConverter.ToInt16(recv, 4));
+            (conn.robot as HasCameras).SetCameraResolution(inputs);
+        }
     }
 
     public void ReceiveCommand(byte[] recv, RobotConnection conn)

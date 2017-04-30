@@ -19,12 +19,12 @@ public class LabBot : Robot,
     ICommand<int[]> setPid;
     ICommand<int[]> setPose;
     ICommand<int[]> setServo;
+    ICommand<int[]> setCamRes;
 
     // Returning commands need to have concrete type
     GetVehiclePoseCommand getPose;
     GetPSDSensorValueCommand getPsd;
     GetCameraOutputCommand getCamOut;
-    
 
     // Controllers
     public WheelMotorController wheelController;
@@ -56,6 +56,7 @@ public class LabBot : Robot,
         setServo = new SetServoCommand(servoController);
         getPsd = new GetPSDSensorValueCommand(psdController);
         getCamOut = new GetCameraOutputCommand(eyeCamController);
+        setCamRes = new SetCameraResolutionCommand(eyeCamController);
     }
 
     void Start()
@@ -156,8 +157,8 @@ public class LabBot : Robot,
         return getCamOut.img;
     }
 
-    public void SetCameraResolution(int camera)
+    public void SetCameraResolution(int[] args)
     {
-        throw new NotImplementedException();
+        setCamRes.Execute(args);
     }
 }
