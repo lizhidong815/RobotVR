@@ -13,25 +13,28 @@ public class MouseCameraControl : MonoBehaviour
 
     private void Update()
     {
-        // Left Click : Free look
-        if (Input.GetMouseButton(0))
+        if (UIManager.instance.windowOpen == false)
         {
-            float lookH = transform.localEulerAngles.y + horizontalLookSens * Input.GetAxis("Mouse X");
-            float lookV = transform.localEulerAngles.x - verticalLookSens * Input.GetAxis("Mouse Y");
-            transform.localEulerAngles = new Vector3(lookV, lookH);
-        }
+            // Left Click : Free look
+            if (Input.GetMouseButton(0))
+            {
+                float lookH = transform.localEulerAngles.y + horizontalLookSens * Input.GetAxis("Mouse X");
+                float lookV = transform.localEulerAngles.x - verticalLookSens * Input.GetAxis("Mouse Y");
+                transform.localEulerAngles = new Vector3(lookV, lookH);
+            }
 
-        // Right Click : Pan 
-        if (Input.GetMouseButton(1))
-        {
-            float currentY = transform.position.y;
-            transform.Translate(new Vector3(sidewaysPanSens * Input.GetAxis("Mouse X"), 0, forwardsPanSens * Input.GetAxis("Mouse Y")), Space.Self);
-            transform.position = new Vector3(transform.position.x, currentY, transform.position.z);
-        }
+            // Right Click : Pan 
+            if (Input.GetMouseButton(1))
+            {
+                float currentY = transform.position.y;
+                transform.Translate(new Vector3(sidewaysPanSens * Input.GetAxis("Mouse X"), 0, forwardsPanSens * Input.GetAxis("Mouse Y")), Space.Self);
+                transform.position = new Vector3(transform.position.x, currentY, transform.position.z);
+            }
 
-        // Scrollwheel : Zoom
-        transform.position += transform.forward * zoomSens * Input.GetAxis("Mouse ScrollWheel");
-        if (transform.position.y < 0)
-            transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+            // Scrollwheel : Zoom
+            transform.position += transform.forward * zoomSens * Input.GetAxis("Mouse ScrollWheel");
+            if (transform.position.y < 0)
+                transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+        }
     }
 }

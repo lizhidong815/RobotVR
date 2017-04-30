@@ -145,6 +145,7 @@ public class FileBrowser
         m_screenRect = screenRect;
         m_browserType = FileBrowserType.File;
         m_callback = callback;
+        UIManager.instance.windowOpen = true;
         SetNewDirectory(Directory.GetCurrentDirectory());
         SwitchDirectoryNow();
     }

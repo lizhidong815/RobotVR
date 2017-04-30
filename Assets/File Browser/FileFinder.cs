@@ -7,6 +7,8 @@ public interface IFileReceiver
 
 public class FileFinder : MonoBehaviour
 {
+
+    public UIManager uiManager;
     public string m_textPath;
 
     private string m_selectPattern;
@@ -21,7 +23,6 @@ public class FileFinder : MonoBehaviour
     protected Texture2D m_directoryImage,
                         m_fileImage;
 
-    // Instatiate object with specific 
     public FileFinder Initialise(string selectPattern, string buttonText, IFileReceiver fileReceiver, float x, float y)
     {
         m_selectPattern = selectPattern;
@@ -29,6 +30,7 @@ public class FileFinder : MonoBehaviour
         m_fileReceiver = fileReceiver;
         m_x = x;
         m_y = y;
+        uiManager = UIManager.instance;
         return this;
     }
 
@@ -69,5 +71,6 @@ public class FileFinder : MonoBehaviour
         m_textPath = path;
         if(m_textPath != null)
             m_fileReceiver.ReceiveFile(m_textPath);
+        uiManager.windowOpen = false;
     }
 }

@@ -21,17 +21,7 @@ public class Startup : MonoBehaviour {
         gameObject.AddComponent<RobotBuilder>();
         gameObject.AddComponent <WorldBuilder>();
         gameObject.AddComponent<UIManager>();
-
-        /*
-        RobotFactory factory = new RobotFactory();
-        factory.AddCube();
-        factory.AddAxel(1, 0);
-        factory.AddAxel(-1, 0);
-        factory.AddWheels(1.1f, 100, 123, 0.7f, 0);
-        factory.AddWheels(1.1f, 100, 123, 0.7f, 1);
-
-        ServerManager.instance.testBot = factory.robot;
-        */
+        doneStartup = true;
         Destroy (this);
 	}
 
