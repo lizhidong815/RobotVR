@@ -61,8 +61,7 @@ public class LabBot : Robot,
 
     void Start()
     {
-        if(this is IMotors)
-            Debug.Log("Im Drivable!!!!");
+        base.Start();
     }
 
     public void DriveMotor(int[] args)

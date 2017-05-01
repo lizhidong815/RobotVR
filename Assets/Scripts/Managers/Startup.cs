@@ -12,18 +12,18 @@ public class Startup : MonoBehaviour {
     {
         if (doneStartup)
             Destroy(this);
+        else
+        {
+            gameObject.AddComponent<SimManager>();
+            gameObject.AddComponent<ServerManager>();
+            gameObject.AddComponent<RobotBuilder>();
+            gameObject.AddComponent<WorldBuilder>();
+            gameObject.AddComponent<UIManager>();
+            gameObject.AddComponent<ObjectManager>();
+            doneStartup = true;
+            Destroy(this);
+        }
     }
-
-    // Use this for initialization
-    void Start () {
-        gameObject.AddComponent<SimManager>();
-        gameObject.AddComponent<ServerManager>();
-        gameObject.AddComponent<RobotBuilder>();
-        gameObject.AddComponent <WorldBuilder>();
-        gameObject.AddComponent<UIManager>();
-        doneStartup = true;
-        Destroy (this);
-	}
 
 	void BuildManager () {
 

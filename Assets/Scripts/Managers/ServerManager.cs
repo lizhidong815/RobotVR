@@ -27,6 +27,7 @@ public class RobotConnection
 {
     public TcpClient tcpClient;
     public Robot robot;
+    public bool inScene = false;
 
     public RobotConnection(TcpClient newClient)
     {
@@ -46,6 +47,7 @@ public class ServerManager : MonoBehaviour
 
     // TESTING
     public Robot testBot;
+    private int robotIDs = 0;
     //
 
     TcpListener listener = null;
@@ -86,7 +88,9 @@ public class ServerManager : MonoBehaviour
         int bytesRead = stream.Read(recvBuf, 0, 5);
         uint dataSize = BitConverter.ToUInt32(recvBuf,1);
         if (BitConverter.IsLittleEndian)
+        {
             dataSize = RobotFunction.ReverseBytes(dataSize);
+        }
         int packetType = recvBuf[0];
 
         // Read Body
@@ -96,6 +100,12 @@ public class ServerManager : MonoBehaviour
         }
 
         switch(packetType){
+            case PacketType.CLIENT_HANDSHAKE:
+                if(conn.robot == null)
+                {
+                    
+                }
+                break;
             case PacketType.CLIENT_MESSAGE:
                 interpreter.ReceiveCommand(recvBuf, conn);
                 break;
@@ -120,12 +130,6 @@ public class ServerManager : MonoBehaviour
         stream.Write(sendBuf, 0, ((int)packet.dataSize) + 5);
     }
 
-    internal void WriteRaw(RobotConnection conn, byte[] msg, int size)
-    {
-        NetworkStream stream = conn.tcpClient.GetStream();
-        stream.Write(msg, 0, size);
-    }
-
     void Awake()
     {
         if (instance == null)
@@ -139,13 +143,6 @@ public class ServerManager : MonoBehaviour
         StartCoroutine(CheckConnections());
         Debug.Log("Server Started");
     }   
-
-
-    // Use this for initialization	
-    void Start ()
-    {
-        Debug.Log("START CALLED");
-	}
 	
 	// Update is called once per frame
 	void Update ()

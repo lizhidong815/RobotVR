@@ -55,9 +55,8 @@ public interface HasCameras
 }
 
 // Abstract robot
-// Universal functions (ie logging)
+// Universal functions
 public abstract class Robot : MonoBehaviour {
 
-    public int axels = 0;
 
 }
