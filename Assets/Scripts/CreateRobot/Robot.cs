@@ -33,9 +33,9 @@ public interface IVWDrivable : IVWUsable
     Speed VWGetVehicleSpeed();
     void VWDriveStraight(int[] args);
     void VWDriveTurn(int[] args);
-    void VwDriveCurve(int[] args);
+    void VWDriveCurve(int[] args);
     int VWDriveRemaining();
-    bool VWDriveDone();
+    int VWDriveDone();
 }
 
 public interface IServoSettable
