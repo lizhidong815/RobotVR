@@ -59,10 +59,6 @@ public class LabBot : Robot,
         setCamRes = new SetCameraResolutionCommand(eyeCamController);
     }
 
-    void Start()
-    {
-        base.Start();
-    }
 
     public void DriveMotor(int[] args)
     {
