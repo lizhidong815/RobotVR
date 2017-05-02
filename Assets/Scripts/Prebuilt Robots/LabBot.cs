@@ -33,6 +33,8 @@ public class LabBot : Robot,
     public ServoController servoController;
     public EyeCameraController eyeCamController;
 
+    Action<RobotConnection> driveDoneDelegate;
+
     // Initialize controllers
     public LabBot()
     { 
@@ -59,6 +61,10 @@ public class LabBot : Robot,
         setCamRes = new SetCameraResolutionCommand(eyeCamController);
     }
 
+    public void DriveDoneCallback()
+    {
+        driveDoneDelegate(myConnection);
+    }
 
     public void DriveMotor(int[] args)
     {
@@ -131,17 +137,13 @@ public class LabBot : Robot,
 		return wheelController.DriveDone ();
     }
 
+    public void VWDriveWait(Action<RobotConnection> doneCallback)
+    {
+        driveDoneDelegate = doneCallback;
+        wheelController.DriveDoneDelegate = DriveDoneCallback;
+    }
+
     public void InitalizeVW(int[] args)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void StopVWControl()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetVWParams(int[] args)
     {
         throw new NotImplementedException();
     }

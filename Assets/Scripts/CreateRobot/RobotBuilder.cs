@@ -37,6 +37,7 @@ public class RobotBuilder: MonoBehaviour, IFileReceiver{
 				}
 			}
 		}
+        ObjectManager.instance.AddObjectToMouse(robotObject.GetComponent<PlaceableObject>());
 		return robotObject;
 	}
 
@@ -111,6 +112,7 @@ public class RobotBuilder: MonoBehaviour, IFileReceiver{
 
 		string fullpath = filepath.Substring (0, filepath.LastIndexOf (ApplicationHelper.slash())) + ApplicationHelper.slash() + modelPath;
 		GameObject model = OBJLoader.LoadOBJFile(fullpath);
+        model.name = "Model";
 		model.transform.SetParent(robotObject.transform, false);
 		model.transform.rotation = Quaternion.Euler(0, 90, 0);
 

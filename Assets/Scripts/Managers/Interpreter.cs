@@ -15,6 +15,16 @@ public class Interpreter {
 
     public ServerManager serverManager;
 
+
+    public void ReturnDriveDone(RobotConnection conn)
+    {
+        Packet p = new Packet();
+        p.packetType = PacketType.DRIVE_DONE;
+        p.dataSize = 0;
+        Debug.Log("writing back drive done!");
+        serverManager.WritePacket(conn, p);
+    }
+
     // Motor Drive Uncontrolled
     private void Command_m(byte[] recv, RobotConnection conn)
     {
@@ -131,6 +141,7 @@ public class Interpreter {
 			p.dataSize = 4;
 			p.data = BitConverter.GetBytes(done);
             serverManager.WritePacket(conn, p);
+            (conn.robot as IVWDrivable).VWDriveWait(ReturnDriveDone);
         }
         else
         { 
@@ -162,41 +173,92 @@ public class Interpreter {
             (conn.robot as HasCameras).SetCameraResolution(inputs);
         }
     }
+    // VW Drive Straight
+    private void Command_y(byte[] recv, RobotConnection conn)
+    {
+        if(conn.robot is IVWDrivable)
+        {
+            // Velocity is first byte, distance is second byte
+            // Order revered in input array to match function call semantics
+            int[] inputs = new int[2];
+            inputs[0] = IPAddress.NetworkToHostOrder(BitConverter.ToInt16(recv, 3));
+            inputs[1] = IPAddress.NetworkToHostOrder(BitConverter.ToInt16(recv, 1));
+            (conn.robot as IVWDrivable).VWDriveStraight(inputs);
+        }
+    }
+    // VW Drive Turn
+    private void Command_Y(byte[] recv, RobotConnection conn)
+    {
+        if (conn.robot is IVWDrivable)
+        {
+
+        }
+    }
+    // VW Drive Curve
+    private void Command_C(byte[] recv, RobotConnection conn)
+    {
+        if (conn.robot is IVWDrivable)
+        {
+
+        }
+    }
 
     public void ReceiveCommand(byte[] recv, RobotConnection conn)
     {
         Debug.Log("Received Command: " + (char)recv[0]);
         switch ((char)recv[0])
         {
+            // Motor Drive Uncontrolled
             case 'm':
                 Command_m(recv, conn);
                 break;
+            // Motor Drive Controlled
             case 'M':
                 Command_M(recv, conn);
                 break;
+            // Set PID Paramters
             case 'd':
                 Command_d(recv, conn);
                 break;
+            // Set Servo Position
             case 's':
                 Command_s(recv, conn);
                 break;
+            // Read PSD Value
             case 'p':
                 Command_p(recv, conn);
                 break;
+            // Get Vehicle Pose (robot coordinates)
             case 'q':
                 Command_q(recv, conn);
                 break;
+            // Set Vehicle Pose (robot coordinates)
             case 'Q':
                 Command_Q(recv, conn);
                 break;
+            // Drive Done or Stalled
             case 'Z':
                 Command_Z(recv, conn);
                 break;
+            // Get Camera Image
             case 'f':
                 Command_f(recv, conn);
                 break;
+            // Set Camera Resolution
             case 'F':
                 Command_F(recv, conn);
+                break;
+            // VW Drive Straight
+            case 'y':
+                Command_y(recv, conn);
+                break;
+            // VW Drive Turn
+            case 'Y':
+                Command_Y(recv, conn);
+                break;
+            // VW Drive Curve
+            case 'C':
+                Command_C(recv, conn);
                 break;
             default:
                 Debug.Log("Received an unknown command.");

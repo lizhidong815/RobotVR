@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using RobotCommands;
@@ -26,6 +27,8 @@ public class WheelMotorController : MonoBehaviour,
 	public float travelledRot;
 	public string checkType;
 	public bool checkActive;
+
+    public Action DriveDoneDelegate;
 
     private void Awake()
     {
@@ -100,7 +103,7 @@ public class WheelMotorController : MonoBehaviour,
 	}
 
 	//set translational and rotational target velocities
-	private void SetSpeed (float setv, float setw){
+	public void SetSpeed (float setv, float setw){
 		wheels [0].SetSpeed (setv + setw * wheelDist / 2 * Mathf.Deg2Rad);
 		wheels [1].SetSpeed (setv - setw * wheelDist / 2 * Mathf.Deg2Rad);
 	}
@@ -132,6 +135,14 @@ public class WheelMotorController : MonoBehaviour,
 		travelledRot = 0;
 	}
 
+    public void TestDelegation()
+    {
+        if (DriveDoneDelegate != null)
+        {
+            DriveDoneDelegate();
+        }
+    }
+
 	private void checkDrive(){
 		if (!checkActive)
 			return;
@@ -155,7 +166,11 @@ public class WheelMotorController : MonoBehaviour,
 		SetSpeed(0, 0);
 		checkActive = false; 
 		resetController ();
+        Debug.Log("Drive is completed!");
+        if (DriveDoneDelegate != null)
+        {
+            Debug.Log("Calling delegate chain");
+            DriveDoneDelegate();
+        }
 	}
-
-
 }

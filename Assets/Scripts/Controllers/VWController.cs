@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using RobotCommands;
-
+/*
 public class VWController : MonoBehaviour, IVWDriveControl
 {
     VWParams vwParams;
@@ -80,3 +80,4 @@ public class Speed
     public int linear;
     public int angular;
 }
+*/

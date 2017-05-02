@@ -19,7 +19,7 @@ public class Startup : MonoBehaviour {
             gameObject.AddComponent<RobotBuilder>();
             gameObject.AddComponent<WorldBuilder>();
             gameObject.AddComponent<UIManager>();
-            gameObject.AddComponent<ObjectManager>();
+           // gameObject.AddComponent<ObjectManager>();
             doneStartup = true;
             Destroy(this);
         }

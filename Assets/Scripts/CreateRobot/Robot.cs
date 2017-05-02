@@ -20,15 +20,9 @@ public interface IPIDUsable
     void SetPID(int[] args);
 }
     
-public interface IVWUsable
+public interface IVWDrivable
 {
     void InitalizeVW(int[] args);
-    void StopVWControl();
-    void SetVWParams(int[] args);
-}
-
-public interface IVWDrivable : IVWUsable
-{
     void VWSetVehicleSpeed(int[] args);
     Speed VWGetVehicleSpeed();
     void VWDriveStraight(int[] args);
@@ -36,6 +30,7 @@ public interface IVWDrivable : IVWUsable
     void VWDriveCurve(int[] args);
     int VWDriveRemaining();
     int VWDriveDone();
+    void VWDriveWait(Action<RobotConnection> doneCallback);
 }
 
 public interface IServoSettable
@@ -54,10 +49,16 @@ public interface HasCameras
     void SetCameraResolution(int[] args);
 }
 
+public class Speed
+{
+    public int linear;
+    public int angular;
+}
 // Abstract robot
 // Universal functions
-public abstract class Robot : MonoBehaviour {
+public abstract class Robot : PlaceableObject {
 
     public int axels = 0;
+    public RobotConnection myConnection;
 
 }
