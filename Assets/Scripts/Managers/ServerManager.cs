@@ -27,27 +27,50 @@ public class RobotConnection
 {
     public TcpClient tcpClient;
     public Robot robot;
+
+    public int ID;
     public bool inScene = false;
 
-    public RobotConnection(TcpClient newClient)
+    public RobotConnection(TcpClient newClient, int newID)
     {
         tcpClient = newClient;
+        ID = newID;
     }
 
     public void AddRobotToScene(Robot newRobot)
     {
         robot = newRobot;
     }
+    /*
+    public override bool Equals(object obj)
+    {
+        if (obj == null || obj.GetType() != this.GetType())
+        {
+            return false;
+        } else
+        {
+            RobotConnection rob = (RobotConnection)obj;
+            return (rob.ID == this.ID);
+        }
+    }
+
+    public override int GetHashCode()
+    {
+        return ID;
+    }
+    */
 }
 
 public class ServerManager : MonoBehaviour
 {
     public static ServerManager instance = null;
+    public PendingRobotPanel pendingRobotPanel;
+
     List<RobotConnection> conns = new List<RobotConnection>();
 
     // TESTING
     public Robot testBot;
-    private int robotIDs = 0;
+    private int robotIDs = 1;
     //
 
     TcpListener listener = null;
@@ -72,10 +95,10 @@ public class ServerManager : MonoBehaviour
     private void AcceptConnection()
     {
         TcpClient client = listener.AcceptTcpClient();
-        RobotConnection newClient = new RobotConnection(client);
-        newClient.AddRobotToScene(testBot);
+        RobotConnection newClient = new RobotConnection(client, robotIDs);
+        pendingRobotPanel.AddPendingRobot(newClient);
+        robotIDs++;
         Debug.Log("Accepted a connection");
-        conns.Add(newClient);
     }
 
     // Read a packet from a connection
@@ -142,10 +165,15 @@ public class ServerManager : MonoBehaviour
         listener.Start();
         StartCoroutine(CheckConnections());
         Debug.Log("Server Started");
-    }   
-	
-	// Update is called once per frame
-	void Update ()
+    }
+
+    void Start()
+    {
+        pendingRobotPanel = PendingRobotPanel.instance;
+    }
+
+    // Update is called once per frame
+    void Update ()
     {
         if (listener.Pending())
         {
