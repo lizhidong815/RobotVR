@@ -108,17 +108,17 @@ public class LabBot : Robot,
 
     public void VWDriveStraight(int[] args)
     {
-        throw new NotImplementedException();
+		wheelController.DriveStraight ((float) args [0]/1000, (float) args [1]/1000);
     }
 
     public void VWDriveTurn(int[] args)
     {
-        throw new NotImplementedException();
+		wheelController.DriveTurn (args [0], args [1]);
     }
 
-    public void VwDriveCurve(int[] args)
+    public void VWDriveCurve(int[] args)
     {
-        throw new NotImplementedException();
+		wheelController.DriveCurve ((float) args [0]/1000, args [1], (float) args [2]/1000);
     }
 
     public int VWDriveRemaining()
@@ -126,9 +126,9 @@ public class LabBot : Robot,
         throw new NotImplementedException();
     }
 
-    public bool VWDriveDone()
+    public int VWDriveDone()
     {
-        return true;
+		return wheelController.DriveDone ();
     }
 
     public void InitalizeVW(int[] args)

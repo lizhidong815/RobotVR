@@ -125,11 +125,11 @@ public class Interpreter {
     {
         if(conn.robot is IVWDrivable)
         {
-            bool done =(conn.robot as IVWDrivable).VWDriveDone();
+			int done = (conn.robot as IVWDrivable).VWDriveDone();
             Packet p = new Packet();
             p.packetType = PacketType.SERVER_MESSAGE;
-            p.dataSize = 1;
-            p.data = BitConverter.GetBytes(done);
+			p.dataSize = 4;
+			p.data = BitConverter.GetBytes(done);
             serverManager.WritePacket(conn, p);
         }
         else

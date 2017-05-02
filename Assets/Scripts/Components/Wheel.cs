@@ -29,12 +29,20 @@ namespace RobotComponents
 			D = d;
 		}
 
+		public void SetSpeed(float speed){
+			SetMotorSpeed (speed / Mathf.PI / diameter * 360);
+		}
+
+		public float GetSpeed(){
+			return tickrate / encoderRate * Mathf.PI * diameter;
+		}
+
 		public void SetMotorSpeed(float speed)
 		{
 			this.speed = speed;
 			JointMotor newmotor = GetComponent<HingeJoint>().motor;
 			newmotor.targetVelocity = speed;
-			GetComponent<HingeJoint>().motor = newmotor;
+			wheelHingeJoint.motor = newmotor;
 		}
 			
 		public void FixedUpdate()

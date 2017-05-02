@@ -12,13 +12,25 @@ public class WheelMotorController : MonoBehaviour,
     public float maxMotorTorque; // maximum torque the motor can apply to wheel
     public float maxSteeringAngle; // maximum steer angle the wheel can have
 	public float wheelDist;
-	public float estimatedrot;
-	public Vector3 estimatedpos;
+	public float Rot;
+	public float w;
+	public Vector3 Pos;
+	public float v;
+
+	public bool drive = false; // for testing purposes
+
+	//vw parameters
+	public float targetDist;
+	public float travelledDist;
+	public float targetRot;
+	public float travelledRot;
+	public string checkType;
+	public bool checkActive;
 
     private void Awake()
     {
         wheels = new List<Wheel>();
-		estimatedpos = new Vector3();
+		Pos = new Vector3();
     }
 
     // Set the local PID Parameters
@@ -43,18 +55,106 @@ public class WheelMotorController : MonoBehaviour,
         SetMotorSpeed(motor, ticks);
     }
     // Update visual of wheel on each frame
-    public void FixedUpdate()
+    private void FixedUpdate()
 	{
-		float leftdist = wheels [0].tickrate / 540 * Mathf.PI * wheels [0].diameter;
-		float rightdist = wheels [1].tickrate / 540 * Mathf.PI * wheels [1].diameter;
-		float turnAngle = (leftdist - rightdist) * 360 / Mathf.PI / 2 / wheelDist;
-		estimatedrot += turnAngle;
-		//float turnRadius = (leftdist + rightdist) / 2 * 360 / turnAngle / 2 / Mathf.PI;
-		//float straightdist = 2 * turnRadius * Mathf.Sin (Mathf.Deg2Rad * turnAngle / 2);
-		float straightdist = (leftdist + rightdist)/2;
-		if (!float.IsNaN (straightdist)) {
-			estimatedpos += new Vector3 (straightdist * Mathf.Sin (Mathf.Deg2Rad * turnAngle / 2), 0, straightdist * Mathf.Cos (Mathf.Deg2Rad * turnAngle / 2));
+		if (drive) { //for testing purposes
+			DriveCurve(1, 90, 0.1f);
+			drive = false;
 		}
+
+		updatePosition ();
+		checkDrive ();
+	}
+
+	public void DriveStraight(float distance, float velocity){
+		resetController ();
+		targetDist = distance;
+		checkType = "distance";
+		SetSpeed (velocity, 0);
+		checkActive = true;
+	}
+
+	public void DriveTurn(float rotation, float velocity){
+		resetController ();
+		targetRot = rotation;
+		checkType = "rotation";
+		SetSpeed (0, velocity);
+		checkActive = true;
+	}
+
+	public void DriveCurve(float distance, float rotation, float velocity){
+		resetController ();
+		targetDist = distance;
+		checkType = "distance";
+		SetSpeed(velocity, (float)velocity / distance * rotation); //finds w via ratio
+		checkActive = true;
+	}
+
+	public int DriveDone(){
+		if (!checkActive)
+			return 1;
+
+		//code for stalling or blockage, return 4
+
+		return 0;
+	}
+
+	//set translational and rotational target velocities
+	private void SetSpeed (float setv, float setw){
+		wheels [0].SetSpeed (setv + setw * wheelDist / 2 * Mathf.Deg2Rad);
+		wheels [1].SetSpeed (setv - setw * wheelDist / 2 * Mathf.Deg2Rad);
+	}
+
+	private void updatePosition(){
+		float lspeed = wheels [0].GetSpeed ();
+		float rspeed = wheels [1].GetSpeed ();
+		float newv = (rspeed + lspeed) / 2;
+		float neww = (lspeed - rspeed) / wheelDist * Mathf.Rad2Deg;
+		Pos.z += ((newv + v) / 2) * Mathf.Cos (Mathf.Deg2Rad * Rot);
+		Pos.x += ((newv + v) / 2) * Mathf.Sin (Mathf.Deg2Rad * Rot);
+		Rot += (neww + w) / 2;
+
+		while (Rot > 180) {
+			Rot -= 360;
+		}
+		while (Rot < -180) {
+			Rot += 360;
+		}
+
+		v = newv;
+		w = neww;
+	}
+
+	private void resetController(){
+		targetDist = 0;
+		targetRot = 0;
+		travelledDist = 0;
+		travelledRot = 0;
+	}
+
+	private void checkDrive(){
+		if (!checkActive)
+			return;
+
+		switch (checkType) {
+		case "distance":
+			travelledDist += v;
+			if (Mathf.Sign(targetDist) * (targetDist - travelledDist) > 0)
+				return;
+			break;
+		case "rotation":
+			travelledRot += w;
+			if (Mathf.Sign(targetRot) * (targetRot - travelledRot) > 0)
+				return;
+			break;
+		default:
+			break;
+		}
+
+		//journey complete
+		SetSpeed(0, 0);
+		checkActive = false; 
+		resetController ();
 	}
 
 
