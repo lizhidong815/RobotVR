@@ -13,7 +13,9 @@ public abstract class PlaceableObject : MonoBehaviour
     protected Rigidbody rigidBody;
     protected Collider objCollider;
 
+    [SerializeField]
     private Renderer objRenderer;
+    [SerializeField]
     private Material defaultMat;
     private Material validMat;
     private Material invalidMat;

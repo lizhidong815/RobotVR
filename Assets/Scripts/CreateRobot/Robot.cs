@@ -5,19 +5,19 @@ using UnityEngine;
 
 public interface IPosable
 {
-    void SetPose(int[] args);
+    void SetPose(int x, int y, int phi);
     Pose GetPose();
 }
 
 public interface IMotors
 {
-    void DriveMotor(int[] args);
+    void DriveMotor(int motor, int speed);
 }
 
 public interface IPIDUsable
 {
-    void DriveMotorControlled(int[] args);
-    void SetPID(int[] args);
+    void DriveMotorControlled(int motor, int ticks);
+    void SetPID(int motor, int p, int i, int d);
 }
     
 public interface IVWDrivable
@@ -25,7 +25,7 @@ public interface IVWDrivable
     void InitalizeVW(int[] args);
     void VWSetVehicleSpeed(int[] args);
     Speed VWGetVehicleSpeed();
-    void VWDriveStraight(int[] args);
+    void VWDriveStraight(int distance, int speed);
     void VWDriveTurn(int[] args);
     void VWDriveCurve(int[] args);
     int VWDriveRemaining();
@@ -35,18 +35,18 @@ public interface IVWDrivable
 
 public interface IServoSettable
 {
-    void SetServo(int[] args);
+    void SetServo(int servo, int angle);
 }
 
 public interface IPSDSensors
 {
-    UInt16 GetPSD(int args);
+    UInt16 GetPSD(int psd);
 }
 
 public interface HasCameras
 {
     byte[] GetCameraOutput(int camera);
-    void SetCameraResolution(int[] args);
+    void SetCameraResolution(int camera, int width, int height);
 }
 
 public class Speed
@@ -56,9 +56,8 @@ public class Speed
 }
 // Abstract robot
 // Universal functions
-public abstract class Robot : PlaceableObject {
-
+public abstract class Robot : PlaceableObject
+{
     public int axels = 0;
-    public RobotConnection myConnection;
-
+    public RobotConnection myConnection = null;
 }

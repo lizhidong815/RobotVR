@@ -30,8 +30,9 @@ public class Interpreter {
     {
         if (conn.robot is IMotors)
         {
-            int[] inputs = new int[2] { recv[1] - 1, recv[2] };
-            (conn.robot as IMotors).DriveMotor(inputs);
+            int motor = recv[1] - 1;
+            int speed = recv[2];
+            (conn.robot as IMotors).DriveMotor(motor, speed);
         }
         else
         {
@@ -43,8 +44,9 @@ public class Interpreter {
     {
         if (conn.robot is IPIDUsable)
         {
-            int[] inputs = new int[2] { recv[1] - 1, recv[2]};
-            (conn.robot as IPIDUsable).DriveMotorControlled(inputs);
+            int motor = recv[1] - 1;
+            int ticks = recv[2];
+            (conn.robot as IPIDUsable).DriveMotorControlled(motor, ticks);
         }
         else
         {
@@ -56,8 +58,11 @@ public class Interpreter {
     {
         if (conn.robot is IPIDUsable)
         {
-            int[] inputs = new int[4] { recv[1] - 1, recv[2], recv[3], recv[4] };
-            (conn.robot as IPIDUsable).SetPID(inputs);
+            int motor = recv[1] - 1;
+            int p = recv[2];
+            int i = recv[3];
+            int d = recv[4];
+            (conn.robot as IPIDUsable).SetPID(motor, p, i, d);
         }
         else
         {
@@ -69,8 +74,9 @@ public class Interpreter {
     {
         if(conn.robot is IServoSettable)
         {
-            int[] inputs = new int[2] { recv[1] - 1, recv[2] };
-            (conn.robot as IServoSettable).SetServo(inputs);
+            int servo = recv[1] - 1;
+            int angle = recv[2];
+            (conn.robot as IServoSettable).SetServo(servo, angle);
         }
         else
         {
@@ -83,8 +89,8 @@ public class Interpreter {
     {
         if (conn.robot is IPSDSensors)
         {
-            int inputs = recv[1] - 1;
-            byte[] value = BitConverter.GetBytes((conn.robot as IPSDSensors).GetPSD(inputs));
+            int psd = recv[1] - 1;
+            byte[] value = BitConverter.GetBytes((conn.robot as IPSDSensors).GetPSD(psd));
             if (BitConverter.IsLittleEndian)
             {
                 Array.Reverse(value);
@@ -94,7 +100,6 @@ public class Interpreter {
             packet.dataSize = 2;
             packet.data = new byte[2];
             value.CopyTo(packet.data, 0);
-            Debug.Log("PSD Sensor Value: " + value);
             serverManager.WritePacket(conn, packet);
         }
         else
@@ -120,10 +125,10 @@ public class Interpreter {
     {
         if (conn.robot is IPosable)
         {
-            int[] inputs = new int[3]{IPAddress.NetworkToHostOrder(BitConverter.ToInt16(recv, 1)),
-                IPAddress.NetworkToHostOrder(BitConverter.ToInt16(recv, 3)),
-                IPAddress.NetworkToHostOrder(BitConverter.ToInt16(recv, 5)) };
-            (conn.robot as IPosable).SetPose(inputs);
+            int x = IPAddress.NetworkToHostOrder(BitConverter.ToInt16(recv, 1));
+            int y = IPAddress.NetworkToHostOrder(BitConverter.ToInt16(recv, 3));
+            int phi = IPAddress.NetworkToHostOrder(BitConverter.ToInt16(recv, 5));
+            (conn.robot as IPosable).SetPose(x, y, phi);
         }
         else
         {
@@ -166,11 +171,10 @@ public class Interpreter {
     {
         if(conn.robot is HasCameras)
         {
-            int[] inputs = new int[3];
-            inputs[0] = recv[1] - 1;
-            inputs[1] = IPAddress.NetworkToHostOrder(BitConverter.ToInt16(recv, 2));
-            inputs[2] = IPAddress.NetworkToHostOrder(BitConverter.ToInt16(recv, 4));
-            (conn.robot as HasCameras).SetCameraResolution(inputs);
+            int camera = recv[1] - 1;
+            int width = IPAddress.NetworkToHostOrder(BitConverter.ToInt16(recv, 2));
+            int height = IPAddress.NetworkToHostOrder(BitConverter.ToInt16(recv, 4));
+            (conn.robot as HasCameras).SetCameraResolution(camera, width, height);
         }
     }
     // VW Drive Straight
@@ -180,10 +184,9 @@ public class Interpreter {
         {
             // Velocity is first byte, distance is second byte
             // Order revered in input array to match function call semantics
-            int[] inputs = new int[2];
-            inputs[0] = IPAddress.NetworkToHostOrder(BitConverter.ToInt16(recv, 3));
-            inputs[1] = IPAddress.NetworkToHostOrder(BitConverter.ToInt16(recv, 1));
-            (conn.robot as IVWDrivable).VWDriveStraight(inputs);
+            int distance = IPAddress.NetworkToHostOrder(BitConverter.ToInt16(recv, 3));
+            int speed = IPAddress.NetworkToHostOrder(BitConverter.ToInt16(recv, 1));
+            (conn.robot as IVWDrivable).VWDriveStraight(distance, speed);
         }
     }
     // VW Drive Turn
@@ -205,7 +208,6 @@ public class Interpreter {
 
     public void ReceiveCommand(byte[] recv, RobotConnection conn)
     {
-        Debug.Log("Received Command: " + (char)recv[0]);
         switch ((char)recv[0])
         {
             // Motor Drive Uncontrolled

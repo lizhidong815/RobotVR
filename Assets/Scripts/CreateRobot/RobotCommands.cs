@@ -10,6 +10,9 @@ using System;
 /// 
 /// INTERPRETER --calls--> INVOKER --invokes--> COMMAND --commands--> RECEIVER --acts--> COMPONENT
 /// 
+/// 
+/// ROBOT COMMANDS IS DEPRECATED THIS SUX no thank you
+/// 
 /// </summary>
 /// <typeparam name="T"></typeparam>
 

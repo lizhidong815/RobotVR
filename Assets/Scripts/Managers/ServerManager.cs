@@ -53,7 +53,6 @@ public class ServerManager : MonoBehaviour
     // TESTING
     public Robot testBot;
     private int robotIDs = 1;
-    //
 
     TcpListener listener = null;
     int port = 8888;

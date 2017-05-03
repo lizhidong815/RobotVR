@@ -1,13 +1,26 @@
-﻿using UnityEngine;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using RobotCommands;
+using UnityEngine;
 using RobotComponents;
 
-public class WheelMotorController : MonoBehaviour, 
-    IMotorControl, 
-    IPIDControl
+// Robot Pose
+[System.Serializable]
+public class Pose
+{
+    public int x;
+    public int y;
+    public int phi;
+
+    public Pose(int x, int y, int phi)
+    {
+        this.x = x;
+        this.y = y;
+        this.phi = phi;
+    }
+}
+
+public class WheelMotorController : MonoBehaviour
 {
     public List<Wheel> wheels; // the information about each individual wheel  
     public float maxMotorTorque; // maximum torque the motor can apply to wheel
@@ -166,10 +179,8 @@ public class WheelMotorController : MonoBehaviour,
 		SetSpeed(0, 0);
 		checkActive = false; 
 		resetController ();
-        Debug.Log("Drive is completed!");
         if (DriveDoneDelegate != null)
         {
-            Debug.Log("Calling delegate chain");
             DriveDoneDelegate();
         }
 	}

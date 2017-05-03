@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using RobotCommands;
 
-public class PoseController : MonoBehaviour, IPoseControl {
+public class PoseController : MonoBehaviour {
 
     private Pose pose;
 
@@ -24,21 +24,5 @@ public class PoseController : MonoBehaviour, IPoseControl {
         pose.x = x;
         pose.y = y;
         pose.phi = phi;
-    }
-}
-
-// Robot Pose
-[System.Serializable]
-public class Pose
-{
-    public int x;
-    public int y;
-    public int phi;
-
-    public Pose(int x, int y, int phi)
-    {
-        this.x = x;
-        this.y = y;
-        this.phi = phi;
     }
 }
