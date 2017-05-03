@@ -7,9 +7,12 @@ public class SimManager : MonoBehaviour {
     public static SimManager instance = null;
 
 	public ServerManager server;
-	public Dictionary<string,Robot> robots;
-	HashSet<string> IDs;
-	public GameObject world;
+
+    public List<PlaceableObject> allObjects;
+
+    public GameObject world;
+
+    private int totalObjects = 0;
 
     private void Awake()
     {
@@ -20,24 +23,11 @@ public class SimManager : MonoBehaviour {
     }
 
     private void Start() {
-		robots = new Dictionary<string,Robot> ();
-		IDs = new HashSet<string> ();
+        allObjects = new List<PlaceableObject>();
 	}
-
-	public Robot GetRobot(string id) {
-		return robots [id];
-	}
-
-	public string newID() {
-		string myString;
-		do {
-			string glyphs = "abcdefghijklmnopqrstuvwxyz";
-			myString = "";
-			for (int i = 0; i < 8; i++) {
-				myString += glyphs [Random.Range (0, glyphs.Length)];
-			}
-		} while (IDs.Contains (myString));
-		IDs.Add (myString);
-		return myString;
-	}
+    
+    public PlaceableObject GetObjectByID(int id)
+    {
+        return allObjects.Find(x => x.objectID == id);
+    }
 }

@@ -3,64 +3,6 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 
-// Object in the scene that can be placed with the ObjectManager
-// Robots, cans, cubes, etc.
-public abstract class PlaceableObject : MonoBehaviour
-{
-    public bool validPlacement = true;
-    public bool isPlaced = false;
-
-    protected Rigidbody rigidBody;
-    protected Collider objCollider;
-
-    [SerializeField]
-    private Renderer objRenderer;
-    [SerializeField]
-    private Material defaultMat;
-    private Material validMat;
-    private Material invalidMat;
-
-    private void Start()
-    {
-        objRenderer = gameObject.transform.Find("Model").GetChild(0).GetComponent<MeshRenderer>();
-        rigidBody = gameObject.GetComponent<Rigidbody>();
-        objCollider = gameObject.GetComponent<Collider>();
-        defaultMat = objRenderer.material;
-        validMat = ObjectManager.instance.validMat;
-        invalidMat = ObjectManager.instance.invalidMat;
-
-        objRenderer.material = validMat;
-        objCollider.isTrigger = true;
-        rigidBody.isKinematic = true;
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (!isPlaced)
-        {
-            objRenderer.material = invalidMat;
-            validPlacement = false;
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (!isPlaced)
-        {
-            objRenderer.material = validMat;
-            validPlacement = true;
-        }
-    }
-
-    public void PlaceObject()
-    {
-        objRenderer.material = defaultMat;
-        objCollider.isTrigger = false;
-        rigidBody.isKinematic = false;
-        isPlaced = true;
-    }
-}
-
 // Object manager handles objects in the scene
 // Allows placement of objects at run-time
 public class ObjectManager : MonoBehaviour {
@@ -113,6 +55,7 @@ public class ObjectManager : MonoBehaviour {
     {
         objectOnMouse = newObject;
         objectBeingPlaced = true;
+        newObject.AttachToMouse();
     }
 
     public void PlaceObject()
@@ -130,7 +73,7 @@ public class ObjectManager : MonoBehaviour {
             RaycastHit hit;
             if(Physics.Raycast(ray, out hit, 1000f, groundMask))
             {
-                objectOnMouse.transform.position = new Vector3(hit.point.x, 0.02f, hit.point.z);
+                objectOnMouse.transform.position = new Vector3(hit.point.x, 0.03f, hit.point.z);
             }
             if(Input.GetKeyDown(KeyCode.A) && objectOnMouse.validPlacement)
             {

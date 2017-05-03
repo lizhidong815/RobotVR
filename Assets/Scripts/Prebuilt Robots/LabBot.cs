@@ -35,6 +35,7 @@ public class LabBot : Robot,
         psdController = gameObject.AddComponent<PSDController>();
         servoController = gameObject.AddComponent<ServoController>();
         eyeCamController = gameObject.AddComponent<EyeCameraController>();
+        wheelController.wheels = new List<Wheel>();
         psdController.sensors = new List<PSDSensor>();
         servoController.servos = new List<Servo>();
         eyeCamController.cameras = new List<EyeCamera>();
