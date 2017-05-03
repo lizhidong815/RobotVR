@@ -194,7 +194,9 @@ public class Interpreter {
     {
         if (conn.robot is IVWDrivable)
         {
-
+            int velocity = IPAddress.HostToNetworkOrder(BitConverter.ToInt16(recv, 1));
+            int angle = IPAddress.HostToNetworkOrder(BitConverter.ToInt16(recv, 3));
+            (conn.robot as IVWDrivable).VWDriveTurn(angle, velocity);
         }
     }
     // VW Drive Curve
@@ -202,7 +204,10 @@ public class Interpreter {
     {
         if (conn.robot is IVWDrivable)
         {
-
+            int speed = IPAddress.NetworkToHostOrder(BitConverter.ToInt16(recv, 1));
+            int distance = IPAddress.NetworkToHostOrder(BitConverter.ToInt16(recv, 3));
+            int angle = IPAddress.NetworkToHostOrder(BitConverter.ToInt16(recv, 5));
+            (conn.robot as IVWDrivable).VWDriveCurve(distance, angle, speed);
         }
     }
 

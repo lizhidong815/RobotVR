@@ -72,6 +72,9 @@ public class ObjectManager : MonoBehaviour {
     public Material validMat;
     public Material invalidMat;
 
+    public GameObject placeableCylinder;
+    public GameObject placeableCube;
+
     // Specific object currently being placed (one at a time strict)
     public bool objectBeingPlaced = false;
     public PlaceableObject objectOnMouse;
@@ -91,9 +94,6 @@ public class ObjectManager : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
-        groundMask = LayerMask.GetMask("Ground");
-        validMat = (Material)Resources.Load("Materials/PlacementValidMaterial", typeof(Material));
-        invalidMat = (Material)Resources.Load("Materials/PlacementInvalidMaterial", typeof(Material));
     }
 
     public void AddTestObject()
@@ -105,8 +105,7 @@ public class ObjectManager : MonoBehaviour {
 
     public void AddCylinderToScene()
     {
-        GameObject newCylinder = Resources.Load("PlaceableCylinder") as GameObject;
-        PlaceableObject newCyl = Instantiate(newCylinder).GetComponent<PlaceableObject>();
+        PlaceableObject newCyl = Instantiate(placeableCylinder).GetComponent<PlaceableObject>();
         AddObjectToMouse(newCyl);
     }
 

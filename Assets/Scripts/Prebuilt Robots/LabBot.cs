@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using RobotComponents;
 
 public class LabBot : Robot, 
     IMotors,
@@ -14,27 +15,29 @@ public class LabBot : Robot,
 {
     // Controllers
     public WheelMotorController wheelController;
-    public PoseController poseController;
     public PSDController psdController;
     public ServoController servoController;
     public EyeCameraController eyeCamController;
 
     Action<RobotConnection> driveDoneDelegate;
 
-    // Initialize controllers
-    public LabBot()
-    { 
-
-    }
-
     // Initialize commands
     private void Awake()
     {
+
+    }
+
+    // This function sets the controllers for a newly created LabBot object
+    // Used when a robot is created from file
+    public void Initialize()
+    {
         wheelController = gameObject.AddComponent<WheelMotorController>();
-        poseController = gameObject.AddComponent<PoseController>();
         psdController = gameObject.AddComponent<PSDController>();
         servoController = gameObject.AddComponent<ServoController>();
         eyeCamController = gameObject.AddComponent<EyeCameraController>();
+        psdController.sensors = new List<PSDSensor>();
+        servoController.servos = new List<Servo>();
+        eyeCamController.cameras = new List<EyeCamera>();
     }
 
     public void DriveDoneCallback()
@@ -96,14 +99,15 @@ public class LabBot : Robot,
 		wheelController.DriveStraight ((float) distance/1000, (float) speed/1000);
     }
 
-    public void VWDriveTurn(int[] args)
+    public void VWDriveTurn(int rotation, int velocity)
     {
-		wheelController.DriveTurn (args [0], args [1]);
+        Debug.Log("Turn " + rotation + " degrees with speed " + velocity);
+		wheelController.DriveTurn (rotation, velocity);
     }
 
-    public void VWDriveCurve(int[] args)
+    public void VWDriveCurve(int distance, int rotation, int velocity)
     {
-		wheelController.DriveCurve ((float) args [0]/1000, args [1], (float) args [2]/1000);
+		wheelController.DriveCurve ((float) distance/1000, rotation, (float) velocity/1000);
     }
 
     public int VWDriveRemaining()

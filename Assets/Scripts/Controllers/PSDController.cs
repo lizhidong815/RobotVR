@@ -9,11 +9,6 @@ public class PSDController : MonoBehaviour {
 
     public List<PSDSensor> sensors;
 
-    public PSDController()
-    {
-        sensors = new List<PSDSensor>();
-    }
-
     public UInt16 GetPSDValue(int psd)
     {   
         if (sensors[psd].value <= 0)

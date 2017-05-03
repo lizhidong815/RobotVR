@@ -9,11 +9,6 @@ public class EyeCameraController : MonoBehaviour {
 
     public List<EyeCamera> cameras;
 
-	public EyeCameraController()
-    {
-        cameras = new List<EyeCamera>();
-    }
-
 	public byte[] GetBytes(int camera)
     {   
 		return cameras [camera].GetBytes ();

@@ -42,7 +42,6 @@ public class UIManager : MonoBehaviour {
     {
         worldBuilder = WorldBuilder.instance;
         robotBuilder = RobotBuilder.instance;
-        fileFinderPrefab = Resources.Load("FileFinderPrefab") as GameObject;
         CreateButtons();    
     }
 }

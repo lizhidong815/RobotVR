@@ -26,8 +26,8 @@ public interface IVWDrivable
     void VWSetVehicleSpeed(int[] args);
     Speed VWGetVehicleSpeed();
     void VWDriveStraight(int distance, int speed);
-    void VWDriveTurn(int[] args);
-    void VWDriveCurve(int[] args);
+    void VWDriveTurn(int rotation, int velocity);
+    void VWDriveCurve(int distance, int rotation , int velocity);
     int VWDriveRemaining();
     int VWDriveDone();
     void VWDriveWait(Action<RobotConnection> doneCallback);

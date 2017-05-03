@@ -100,6 +100,7 @@ public class RobotBuilder: MonoBehaviour, IFileReceiver{
 		{
 		case "LabBot":
 			robot = robotObject.AddComponent<LabBot>();
+            (robot as LabBot).Initialize();
 			break;
 		default:
 			Debug.Log("Couldnt find robot type");

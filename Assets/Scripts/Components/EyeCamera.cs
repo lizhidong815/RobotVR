@@ -17,6 +17,7 @@ namespace RobotComponents
 
         private RenderTexture rendTex;
 
+        // Default to QQVGA size
         private void Awake()
         {
             rendTex = new RenderTexture(160,120,16);           

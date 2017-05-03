@@ -22,11 +22,11 @@ public class Pose
 
 public class WheelMotorController : MonoBehaviour
 {
-    public List<Wheel> wheels; // the information about each individual wheel  
+    public List<Wheel> wheels;
     public float maxMotorTorque; // maximum torque the motor can apply to wheel
     public float maxSteeringAngle; // maximum steer angle the wheel can have
 	public float wheelDist;
-	public float Rot;
+    public float Rot;
 	public float w;
 	public Vector3 Pos;
 	public float v;
@@ -42,28 +42,29 @@ public class WheelMotorController : MonoBehaviour
 	public bool checkActive;
 
     public Action DriveDoneDelegate;
-
-    private void Awake()
+    
+    private void Start()
     {
-        wheels = new List<Wheel>();
-		Pos = new Vector3();
+       // wheels = new List<Wheel>();
+		Pos = new Vector3(0,0,0);
     }
-
+    
     // Set the local PID Parameters
     public void SetPIDParams(int motor, int p, int i, int d)
     {
-		wheels [motor].SetPIDParams (p, i, d);
+        wheels[motor].SetPIDParams(p, i, d);
     }
     // Set the speed of a single motor
     public void SetMotorSpeed(int motor, float speed)
     {
-		wheels [motor].SetMotorSpeed (speed);
+        wheels[motor].SetMotorSpeed(speed);
     }
 
     // Set the speed of a single motor (controlled)
     public void SetMotorControlled(int motor, int ticks)
     {
-        if(!wheels[motor].pidEnabled)
+        
+        if(wheels[motor].pidEnabled)
         {
             SetPIDParams(motor, 4, 1, 1);
         }
@@ -71,14 +72,10 @@ public class WheelMotorController : MonoBehaviour
         SetMotorSpeed(motor, ticks);
     }
     // Update visual of wheel on each frame
-    private void FixedUpdate()
-	{
-		if (drive) { //for testing purposes
-			DriveCurve(1, 90, 0.1f);
-			drive = false;
-		}
-
-		updatePosition ();
+    private void Update()
+    {
+        Debug.Log("Fixed update");
+        updatePosition ();
 		checkDrive ();
 	}
 
@@ -117,13 +114,13 @@ public class WheelMotorController : MonoBehaviour
 
 	//set translational and rotational target velocities
 	public void SetSpeed (float setv, float setw){
-		wheels [0].SetSpeed (setv + setw * wheelDist / 2 * Mathf.Deg2Rad);
-		wheels [1].SetSpeed (setv - setw * wheelDist / 2 * Mathf.Deg2Rad);
+		wheels[0].SetSpeed (setv + setw * wheelDist / 2 * Mathf.Deg2Rad);
+		wheels[1].SetSpeed (setv - setw * wheelDist / 2 * Mathf.Deg2Rad);
 	}
 
 	private void updatePosition(){
-		float lspeed = wheels [0].GetSpeed ();
-		float rspeed = wheels [1].GetSpeed ();
+		float lspeed = wheels[0].GetSpeed ();
+		float rspeed = wheels[1].GetSpeed ();
 		float newv = (rspeed + lspeed) / 2;
 		float neww = (lspeed - rspeed) / wheelDist * Mathf.Rad2Deg;
 		Pos.z += ((newv + v) / 2) * Mathf.Cos (Mathf.Deg2Rad * Rot);
