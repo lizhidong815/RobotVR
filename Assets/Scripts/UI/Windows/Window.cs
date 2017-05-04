@@ -3,13 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
-// Displays a window of object information
-public class ObjectInspector : MonoBehaviour {
+public abstract class Window : MonoBehaviour  {
 
-    // Use this for initialization
-    void Start () {
+    [SerializeField]
+    GameObject titleBar;
+    GameObject content;
+
+	// Use this for initialization
+	void Start () {
 		
 	}
 	

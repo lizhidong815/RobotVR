@@ -9,6 +9,8 @@ public class ObjectManager : MonoBehaviour {
 
     public static ObjectManager instance = null;
 
+    public int totalObjects = 0;
+
     // Stores reference to the Ground LayerMask, and shaders to use during placement
     public LayerMask groundMask;
     public Material validMat;
@@ -48,6 +50,9 @@ public class ObjectManager : MonoBehaviour {
     public void AddCylinderToScene()
     {
         PlaceableObject newCyl = Instantiate(placeableCylinder).GetComponent<PlaceableObject>();
+        newCyl.PostBuild();
+        newCyl.objectID = totalObjects;
+        totalObjects++;
         AddObjectToMouse(newCyl);
     }
 

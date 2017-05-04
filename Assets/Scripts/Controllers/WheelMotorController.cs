@@ -74,7 +74,6 @@ public class WheelMotorController : MonoBehaviour
     // Update visual of wheel on each frame
     private void Update()
     {
-        Debug.Log("Fixed update");
         updatePosition ();
 		checkDrive ();
 	}

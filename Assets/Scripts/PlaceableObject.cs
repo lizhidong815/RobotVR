@@ -7,6 +7,8 @@ using UnityEngine.EventSystems;
 // Robots, cans, cubes, etc.
 public abstract class PlaceableObject : MonoBehaviour, IPointerClickHandler
 {
+    public ObjectSelector objectSelector;
+
     public bool validPlacement = true;
     public bool isPlaced = false;
     public bool isSelected = false;
@@ -14,23 +16,23 @@ public abstract class PlaceableObject : MonoBehaviour, IPointerClickHandler
 
     public int objectID;
 
-    protected Rigidbody rigidBody;
+    public Rigidbody rigidBody;
     protected Collider objCollider;
 
-    private GameObject modelContainer;
+    public GameObject modelContainer;
     [SerializeField]
     private List<Material> defaultMats;
     private Material validMat;
     private Material invalidMat;
 
-    private void Awake()
+    public void PostBuild()
     {
         modelContainer = transform.Find("Model").gameObject;
         rigidBody = gameObject.GetComponent<Rigidbody>();
-        objCollider = gameObject.GetComponent<Collider>();
-        defaultMats = new List<Material>();
+        objCollider = gameObject.GetComponent<Collider>();       
         validMat = ObjectManager.instance.validMat;
         invalidMat = ObjectManager.instance.invalidMat;
+        defaultMats = new List<Material>();
         foreach (Transform child in modelContainer.transform)
         {
             Renderer childRend = child.GetComponent<Renderer>();
@@ -38,15 +40,9 @@ public abstract class PlaceableObject : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    public void AttachToMouse()
+    private void Start()
     {
-        foreach (Transform child in modelContainer.transform)
-        {
-            child.GetComponent<Renderer>().material = validMat;
-        }
-        validPlacement = true;
-        objCollider.isTrigger = true;
-        rigidBody.isKinematic = true;
+        objectSelector = ObjectSelector.instance;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -73,14 +69,34 @@ public abstract class PlaceableObject : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    protected void Select()
+    public void OnPointerClick(PointerEventData eventData)
     {
         if (isPlaced)
         {
-            isSelected = !isSelected;
-            currLayer = isSelected ? 11 : 0;
-            SetHighlightLayer(gameObject, currLayer);
+            if (isSelected)
+            {
+                objectSelector.UnselectObject();
+            }
+            else
+            {
+                Select();
+            }
         }
+    }
+
+    protected void Select()
+    {
+        isSelected = true;
+        objectSelector.NewObjectSelected(this);
+        currLayer = 11;
+        SetHighlightLayer(gameObject, currLayer);
+    }
+
+    public void Deselect()
+    {
+        isSelected = false;
+        currLayer = 0;
+        SetHighlightLayer(gameObject, currLayer);
     }
 
     public void SetHighlightLayer(GameObject obj, int layer)
@@ -92,9 +108,15 @@ public abstract class PlaceableObject : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+    public void AttachToMouse()
     {
-        Select();
+        foreach (Transform child in modelContainer.transform)
+        {
+            child.GetComponent<Renderer>().material = validMat;
+        }
+        validPlacement = true;
+        objCollider.isTrigger = true;
+        rigidBody.isKinematic = true;
     }
 
     public void PlaceObject()
