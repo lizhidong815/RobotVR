@@ -135,30 +135,13 @@ public class Interpreter {
             Debug.Log("Requested pose from a non posable robot");
         }
     }
-    // Drive Done
-    private void Command_Z(byte[] recv, RobotConnection conn)
-    {
-        if(conn.robot is IVWDrivable)
-        {
-			int done = (conn.robot as IVWDrivable).VWDriveDone();
-            Packet p = new Packet();
-            p.packetType = PacketType.SERVER_MESSAGE;
-			p.dataSize = 4;
-			p.data = BitConverter.GetBytes(done);
-            serverManager.WritePacket(conn, p);
-            (conn.robot as IVWDrivable).VWDriveWait(ReturnDriveDone);
-        }
-        else
-        { 
-            Debug.Log("Requested drive done from a non VW drivable robot");
-        }
-    }
+
     // Get Camera
     private void Command_f(byte[] recv, RobotConnection conn)
     {
-        if (conn.robot is HasCameras)
+        if (conn.robot is ICameras)
         {
-            byte[] img = (conn.robot as HasCameras).GetCameraOutput(0);
+            byte[] img = (conn.robot as ICameras).GetCameraOutput(0);
             Packet packet = new Packet();
             packet.packetType = PacketType.SERVER_CAMIMG;
             packet.dataSize = (UInt32)img.Length;
@@ -169,12 +152,12 @@ public class Interpreter {
     // Set Camera
     private void Command_F(byte[] recv, RobotConnection conn)
     {
-        if(conn.robot is HasCameras)
+        if(conn.robot is ICameras)
         {
             int camera = recv[1] - 1;
             int width = IPAddress.NetworkToHostOrder(BitConverter.ToInt16(recv, 2));
             int height = IPAddress.NetworkToHostOrder(BitConverter.ToInt16(recv, 4));
-            (conn.robot as HasCameras).SetCameraResolution(camera, width, height);
+            (conn.robot as ICameras).SetCameraResolution(camera, width, height);
         }
     }
     // VW Drive Straight
@@ -210,6 +193,56 @@ public class Interpreter {
             (conn.robot as IVWDrivable).VWDriveCurve(distance, angle, speed);
         }
     }
+    // Get Speed
+    private void Command_X(byte[] recv, RobotConnection conn)
+    {
+        if(conn.robot is IVWDrivable)
+        {
+            Packet p = new Packet();
+            Speed speed = (conn.robot as IVWDrivable).VWGetVehicleSpeed();
+            Debug.Log(speed.linear + "  " + speed.angular);
+            byte[] lin = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(speed.linear));
+            byte[] ang = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(speed.angular));
+            p.packetType = PacketType.SERVER_MESSAGE;
+            p.dataSize = 4;
+            p.data = new byte[4];
+            lin.CopyTo(p.data, 0);
+            ang.CopyTo(p.data, 2);
+            Debug.Log(p.data[0] + " " + p.data[1] + " " + p.data[2] + " " + p.data[3]);
+            serverManager.WritePacket(conn, p);
+        }
+    }
+    // Drive Done
+    private void Command_Z(byte[] recv, RobotConnection conn)
+    {
+        if (conn.robot is IVWDrivable)
+        {
+            bool done = (conn.robot as IVWDrivable).VWDriveDone();
+            Packet p = new Packet();
+            p.packetType = PacketType.SERVER_MESSAGE;
+            p.dataSize = 1;
+            p.data = BitConverter.GetBytes(done);
+            serverManager.WritePacket(conn, p);
+            (conn.robot as IVWDrivable).VWDriveWait(ReturnDriveDone);
+        }
+        else
+        {
+            Debug.Log("Requested drive done from a non VW drivable robot");
+        }
+    }
+    // Drive Remaining
+    private void Command_z(byte[] recv, RobotConnection conn)
+    {
+        if(conn.robot is IVWDrivable)
+        {
+            bool done = (conn.robot as IVWDrivable).VWDriveDone();
+            Packet p = new Packet();
+            p.packetType = PacketType.SERVER_MESSAGE;
+            p.dataSize = 1;
+            p.data = BitConverter.GetBytes(done);
+            serverManager.WritePacket(conn, p);
+        }
+    }
 
     public void ReceiveCommand(byte[] recv, RobotConnection conn)
     {
@@ -243,10 +276,6 @@ public class Interpreter {
             case 'Q':
                 Command_Q(recv, conn);
                 break;
-            // Drive Done or Stalled
-            case 'Z':
-                Command_Z(recv, conn);
-                break;
             // Get Camera Image
             case 'f':
                 Command_f(recv, conn);
@@ -266,6 +295,18 @@ public class Interpreter {
             // VW Drive Curve
             case 'C':
                 Command_C(recv, conn);
+                break;
+            // VW Get Speed
+            case 'X':
+                Command_X(recv, conn);
+                break;
+            // Drive Done or Stalled
+            case 'Z':
+                Command_Z(recv, conn);
+                break;
+            // Drive Remaining
+            case 'z':
+                Command_z(recv, conn);
                 break;
             default:
                 Debug.Log("Received an unknown command.");

@@ -23,13 +23,14 @@ public interface IPIDUsable
 public interface IVWDrivable
 {
     void InitalizeVW(int[] args);
-    void VWSetVehicleSpeed(int[] args);
+    void VWSetVehicleSpeed(int linear, int angular);
     Speed VWGetVehicleSpeed();
     void VWDriveStraight(int distance, int speed);
     void VWDriveTurn(int rotation, int velocity);
     void VWDriveCurve(int distance, int rotation , int velocity);
     int VWDriveRemaining();
-    int VWDriveDone();
+    bool VWDriveDone();
+    int VWDriveStalled();
     void VWDriveWait(Action<RobotConnection> doneCallback);
 }
 
@@ -43,16 +44,22 @@ public interface IPSDSensors
     UInt16 GetPSD(int psd);
 }
 
-public interface HasCameras
+public interface ICameras
 {
     byte[] GetCameraOutput(int camera);
     void SetCameraResolution(int camera, int width, int height);
 }
-
+// Class used to pass data back to client
 public class Speed
 {
-    public int linear;
-    public int angular;
+    public Int16 linear;
+    public Int16 angular;
+
+    public Speed(float lin, float ang)
+    {
+        linear = Convert.ToInt16(lin);
+        angular = Convert.ToInt16(ang);
+    }
 }
 // Abstract robot
 // Universal functions

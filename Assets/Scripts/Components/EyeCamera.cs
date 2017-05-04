@@ -13,9 +13,10 @@ namespace RobotComponents
 
         public float value = 0;
 		public Camera cameraComponent;
-		public Texture2D tex;
-
+   
         private RenderTexture rendTex;
+        private Texture2D tex;
+        private Rect rect;
 
         // Default to QQVGA size
         private void Awake()
@@ -27,6 +28,8 @@ namespace RobotComponents
         {
             cameraComponent = GetComponent<Camera>();
             cameraComponent.targetTexture = rendTex;
+            tex = new Texture2D(rendTex.width, rendTex.height, TextureFormat.RGB24, false);
+            rect = new Rect(0, 0, rendTex.width, rendTex.height);
         }
 
         // Need to reverse the order of the rows. RoBIOS uses top left
@@ -48,6 +51,9 @@ namespace RobotComponents
         {
             Debug.Log("Set Resolution: " + width + "x" + height);
             rendTex = new RenderTexture(width, height, 16);
+            Destroy(tex);
+            tex = new Texture2D(rendTex.width, rendTex.height, TextureFormat.RGB24, false);
+            rect.Set(0, 0, rendTex.width, rendTex.height);
             cameraComponent.targetTexture = rendTex;
         }
 
@@ -55,8 +61,6 @@ namespace RobotComponents
 		void OnPostRender()
         {
             RenderTexture.active = rendTex;
-			tex = new Texture2D(rendTex.width, rendTex.height, TextureFormat.RGB24, false );
-			Rect rect = new Rect( 0, 0, rendTex.width, rendTex.height );
 			tex.ReadPixels( rect, 0, 0, false );
 			tex.Apply( false );
             RenderTexture.active = null;

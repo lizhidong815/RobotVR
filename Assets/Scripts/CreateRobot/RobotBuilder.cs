@@ -203,7 +203,7 @@ public class RobotBuilder: MonoBehaviour, IFileReceiver{
 	}
 
 	public void addCamera(Vector3 position, float pan, float tilt, int imageWidth, int imageHeight) {
-		if(!(robot is HasCameras))
+		if(!(robot is ICameras))
 		{
 			Debug.Log("Trying to add Camera to unsupported robot type");
 		}

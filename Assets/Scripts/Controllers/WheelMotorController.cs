@@ -110,14 +110,14 @@ public class WheelMotorController : MonoBehaviour
         checkActive = true;
     }
 
-    public int DriveDone()
+    public int DriveRemaining()
     {
-        if (!checkActive)
-            return 1;
+        return Convert.ToInt32(targetDist - travelledDist);
+    }
 
-        //code for stalling or blockage, return 4
-
-        return 0;
+    public bool DriveDone()
+    {
+        return checkActive;
     }
 
     //set translational and rotational target velocities
@@ -125,6 +125,11 @@ public class WheelMotorController : MonoBehaviour
     {
         wheels[0].SetSpeed(setv + setw * wheelDist / 2 * Mathf.Deg2Rad);
         wheels[1].SetSpeed(setv - setw * wheelDist / 2 * Mathf.Deg2Rad);
+    }
+
+    public Speed GetSpeed()
+    {
+        return new Speed(v * 1000000, w * 1000);
     }
 
     private void updatePosition()
@@ -158,14 +163,6 @@ public class WheelMotorController : MonoBehaviour
         travelledRot = 0;
     }
 
-    public void TestDelegation()
-    {
-        if (DriveDoneDelegate != null)
-        {
-            DriveDoneDelegate();
-        }
-    }
-
     private void checkDrive()
     {
         if (!checkActive)
@@ -191,10 +188,8 @@ public class WheelMotorController : MonoBehaviour
         SetSpeed(0, 0);
         checkActive = false;
         resetController();
-        Debug.Log("Drive is completed!");
         if (DriveDoneDelegate != null)
         {
-            Debug.Log("Calling delegate chain");
             DriveDoneDelegate();
         }
     }

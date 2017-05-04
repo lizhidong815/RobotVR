@@ -11,7 +11,7 @@ public class LabBot : Robot,
     IPSDSensors,
     IServoSettable,
     IVWDrivable,
-    HasCameras
+    ICameras
 {
     // Controllers
     public WheelMotorController wheelController;
@@ -85,14 +85,14 @@ public class LabBot : Robot,
         return psdController.GetPSDValue(psd);
     }
 
-    public void VWSetVehicleSpeed(int[] args)
+    public void VWSetVehicleSpeed(int linear, int angular)
     {
         throw new NotImplementedException();
     }
 
     public Speed VWGetVehicleSpeed()
     {
-        throw new NotImplementedException();
+        return wheelController.GetSpeed();
     }
 
     public void VWDriveStraight(int distance, int speed)
@@ -113,12 +113,17 @@ public class LabBot : Robot,
 
     public int VWDriveRemaining()
     {
-        throw new NotImplementedException();
+        return wheelController.DriveRemaining();
     }
 
-    public int VWDriveDone()
+    public bool VWDriveDone()
     {
 		return wheelController.DriveDone ();
+    }
+
+    public int VWDriveStalled()
+    {
+        throw new NotImplementedException();
     }
 
     public void VWDriveWait(Action<RobotConnection> doneCallback)
