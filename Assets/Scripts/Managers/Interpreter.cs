@@ -200,7 +200,6 @@ public class Interpreter {
         {
             Packet p = new Packet();
             Speed speed = (conn.robot as IVWDrivable).VWGetVehicleSpeed();
-            Debug.Log(speed.linear + "  " + speed.angular);
             byte[] lin = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(speed.linear));
             byte[] ang = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(speed.angular));
             p.packetType = PacketType.SERVER_MESSAGE;
@@ -208,7 +207,6 @@ public class Interpreter {
             p.data = new byte[4];
             lin.CopyTo(p.data, 0);
             ang.CopyTo(p.data, 2);
-            Debug.Log(p.data[0] + " " + p.data[1] + " " + p.data[2] + " " + p.data[3]);
             serverManager.WritePacket(conn, p);
         }
     }
@@ -246,6 +244,7 @@ public class Interpreter {
 
     public void ReceiveCommand(byte[] recv, RobotConnection conn)
     {
+        
         switch ((char)recv[0])
         {
             // Motor Drive Uncontrolled
@@ -263,6 +262,9 @@ public class Interpreter {
             // Set Servo Position
             case 's':
                 Command_s(recv, conn);
+                break;
+            // Set Servo Range
+            case 'S':
                 break;
             // Read PSD Value
             case 'p':
@@ -309,6 +311,7 @@ public class Interpreter {
                 Command_z(recv, conn);
                 break;
             default:
+                Debug.Log("unknown : " + Convert.ToChar(recv[0]));
                 Debug.Log("Received an unknown command.");
                 break;
         }
