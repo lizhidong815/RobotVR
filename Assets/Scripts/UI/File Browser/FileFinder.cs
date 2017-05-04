@@ -40,26 +40,19 @@ public class FileFinder : MonoBehaviour
         {
             m_fileBrowser.OnGUI();
         }
-        else
-        {
-            OnGUIMain();    
-        }
     }
 
-    protected void OnGUIMain()
-    {
-        if (GUI.Button(new Rect(m_x, m_y, 100, 30), m_buttonText))
-            {
-            m_fileBrowser = new FileBrowser(
-                new Rect(100, 100, 600, 500),
-                "Select a File",
-                FileSelectedCallback
-            );
-            m_fileBrowser.SelectionPattern = m_selectPattern;
-            m_fileBrowser.DirectoryImage = m_directoryImage;
-            m_fileBrowser.FileImage = m_fileImage;
-        }
-    }
+	public void OpenFileSelection(){
+		uiManager.openWindow();
+		m_fileBrowser = new FileBrowser(
+			new Rect(100, 100, 600, 500),
+			"Select a File",
+			FileSelectedCallback
+		);
+		m_fileBrowser.SelectionPattern = m_selectPattern;
+		m_fileBrowser.DirectoryImage = m_directoryImage;
+		m_fileBrowser.FileImage = m_fileImage;
+	}
 
     protected void FileSelectedCallback(string path)
     {
@@ -71,6 +64,6 @@ public class FileFinder : MonoBehaviour
         m_textPath = path;
         if(m_textPath != null)
             m_fileReceiver.ReceiveFile(m_textPath);
-        uiManager.windowOpen = false;
+		uiManager.closeWindow();
     }
 }
