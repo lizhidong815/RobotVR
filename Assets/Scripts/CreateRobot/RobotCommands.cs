@@ -10,6 +10,9 @@ using System;
 /// 
 /// INTERPRETER --calls--> INVOKER --invokes--> COMMAND --commands--> RECEIVER --acts--> COMPONENT
 /// 
+/// 
+/// ROBOT COMMANDS IS DEPRECATED THIS SUX no thank you
+/// 
 /// </summary>
 /// <typeparam name="T"></typeparam>
 
@@ -26,7 +29,7 @@ namespace RobotCommands
     // Can be Driven (motor torque)
     public interface IMotorControl
     {
-        void SetMotorSpeed(int motor, int speed);
+        void SetMotorSpeed(int motor, float speed);
     }
 
     public interface IPIDControl
@@ -35,22 +38,22 @@ namespace RobotCommands
         void SetPIDParams(int motor, int p, int i, int d);
     }
 
-    public interface IVWControl
-    {
-        void Initialize(int tick, int bs, int max, int dir);
-        void SetParameters(int vv, int tv, int vw, int tw);
-        void StopControl();
-    }
+	public interface ICameraControl
+	{
+		byte[] GetBytes (int camera);
+        void SetResolution(int camera, int width, int height);
+	}
 
-    public interface IVWDriveControl : IVWControl
+    public interface IVWDriveControl
     {
-        void SetSpeed(int linear, int angular);
-        Speed GetSpeed();
-        void DriveStraight(int speed, int distance);
-        void DriveTurn(int rotSpeed, int angle);
-        void DriveCurve(int speed, int distance, int angle);
-        int DriveRemaining();
-        bool DriveDone();
+        //void Initialize(int tick, int bs, int max, int dir);
+        void SetSpeed(float linear, float angular);
+        void DriveStraight(float speed, float distance);
+        void DriveTurn(float rotSpeed, float angle);
+        void DriveCurve(float speed, float distance, float angle);
+        int DriveDone();
+        //Speed GetSpeed();
+        //int DriveRemaining();
     }
 
     // Can the Servo be set
@@ -196,12 +199,12 @@ namespace RobotCommands
             _posable.SetVehiclePose(args[0], args[1], args[2]);
         }
     }
-
+    /*
     public class InitalizeVWControlCommand : ICommand<int[]>
     {
-        private readonly IVWControl _vwControllable;
+        private readonly IVWDriveControl _vwControllable;
 
-        public InitalizeVWControlCommand(IVWControl vwControllable)
+        public InitalizeVWControlCommand(IVWDriveControl vwControllable)
         {
             _vwControllable = vwControllable;
         }
@@ -213,40 +216,6 @@ namespace RobotCommands
             // 2: max
             // 2: dir
             _vwControllable.Initialize(args[0], args[1], args[2], args[3]);
-        }
-    }
-
-    public class SetVWParamaterCommand : ICommand<int[]>
-    {
-        private readonly IVWControl _vwControllable;
-
-        public SetVWParamaterCommand(IVWControl vwControllable)
-        {
-            _vwControllable = vwControllable;
-        }
-
-        public void Execute(int[] args)
-        {
-            // 0: vv
-            // 1: tv
-            // 2: vw
-            // 3: tw
-            _vwControllable.SetParameters(args[0], args[1], args[2], args[3]);
-        }
-    }
-
-    public class StopVWControlCommand : ICommand<int[]>
-    {
-        private readonly IVWControl _vwControllable;
-
-        public StopVWControlCommand(IVWControl vwControllable)
-        {
-            _vwControllable = vwControllable;
-        }
-
-        public void Execute(int[] args)
-        {
-            _vwControllable.StopControl();
         }
     }
 
@@ -336,7 +305,7 @@ namespace RobotCommands
             _vwDrivable.DriveCurve(args[0], args[1], args[2]);
         }
     }
-
+   
     public class VWDriveRemainingCommand : ICommand<int[]>
     {
         private readonly IVWDriveControl _vwDrivable;
@@ -356,7 +325,7 @@ namespace RobotCommands
     public class VWDriveDoneCommand : ICommand<int[]>
     {
         private readonly IVWDriveControl _vwDrivable;
-        public bool remaining { get; private set; }
+        public int done { get; private set; }
 
         public VWDriveDoneCommand(IVWDriveControl vwControllable)
         {
@@ -365,7 +334,42 @@ namespace RobotCommands
 
         public void Execute(int[] args)
         {
-            remaining = _vwDrivable.DriveDone();
+            done = _vwDrivable.DriveDone();
         }
+    }
+    */
+    public class GetCameraOutputCommand : ICommand<int>
+    {
+		private readonly ICameraControl _cameraControl;
+        public byte[] img { get; private set; }
+
+        public GetCameraOutputCommand(ICameraControl cameraControl)
+        {
+            _cameraControl = cameraControl;
+        }
+
+        public void Execute(int args)
+        {
+           img = _cameraControl.GetBytes(args);
+        }
+    }
+
+    public class SetCameraResolutionCommand : ICommand<int[]>
+    {
+        private readonly ICameraControl _cameraControl;
+        
+        public SetCameraResolutionCommand(ICameraControl cameraControl)
+        {
+            _cameraControl = cameraControl;
+        }
+
+        public void Execute(int[] args)
+        {
+            // 0 : camera
+            // 1 : width
+            // 2 : height
+            _cameraControl.SetResolution(args[0], args[1], args[2]);
+        }
+           
     }
 }

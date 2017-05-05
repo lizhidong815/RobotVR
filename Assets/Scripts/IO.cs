@@ -35,4 +35,9 @@ public class IO{
 		}
 		return theReader.ReadLine();
 	}
+
+	public void printToCVS(string line){
+		
+		System.IO.File.AppendAllText("/Users/JoelFrewin/Documents/RobotVR/outputcsv.csv", "\n" + line);
+	}
 }

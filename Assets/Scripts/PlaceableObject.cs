@@ -1,0 +1,134 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.EventSystems;
+
+// Object in the scene that can be placed with the ObjectManager
+// Robots, cans, cubes, etc.
+public abstract class PlaceableObject : MonoBehaviour, IPointerClickHandler
+{
+    public ObjectSelector objectSelector;
+
+    public bool validPlacement = true;
+    public bool isPlaced = false;
+    public bool isSelected = false;
+    public int currLayer = 0;
+
+    public int objectID;
+
+    public Rigidbody rigidBody;
+    protected Collider objCollider;
+
+    public GameObject modelContainer;
+    [SerializeField]
+    private List<Material> defaultMats;
+    private Material validMat;
+    private Material invalidMat;
+
+    public void PostBuild()
+    {
+        modelContainer = transform.Find("Model").gameObject;
+        rigidBody = gameObject.GetComponent<Rigidbody>();
+        objCollider = gameObject.GetComponent<Collider>();       
+        validMat = ObjectManager.instance.validMat;
+        invalidMat = ObjectManager.instance.invalidMat;
+        defaultMats = new List<Material>();
+        foreach (Transform child in modelContainer.transform)
+        {
+            Renderer childRend = child.GetComponent<Renderer>();
+            defaultMats.Add(childRend.material);
+        }
+    }
+
+    private void Start()
+    {
+        objectSelector = ObjectSelector.instance;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!isPlaced)
+        {
+            foreach (Transform child in modelContainer.transform)
+            {
+                child.GetComponent<Renderer>().material = invalidMat;           
+            }
+            validPlacement = false;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (!isPlaced)
+        {
+            foreach (Transform child in modelContainer.transform)
+            {
+                child.GetComponent<Renderer>().material = validMat;
+            }
+            validPlacement = true;
+        }
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (isPlaced)
+        {
+            if (isSelected)
+            {
+                objectSelector.UnselectObject();
+            }
+            else
+            {
+                Select();
+            }
+        }
+    }
+
+    protected void Select()
+    {
+        isSelected = true;
+        objectSelector.NewObjectSelected(this);
+        currLayer = 11;
+        SetHighlightLayer(gameObject, currLayer);
+    }
+
+    public void Deselect()
+    {
+        isSelected = false;
+        currLayer = 0;
+        SetHighlightLayer(gameObject, currLayer);
+    }
+
+    public void SetHighlightLayer(GameObject obj, int layer)
+    {
+        obj.layer = layer;
+        foreach (Transform child in obj.transform)
+        {
+            SetHighlightLayer(child.gameObject, layer);
+        }
+    }
+
+    public void AttachToMouse()
+    {
+        foreach (Transform child in modelContainer.transform)
+        {
+            child.GetComponent<Renderer>().material = validMat;
+        }
+        validPlacement = true;
+        objCollider.isTrigger = true;
+        rigidBody.isKinematic = true;
+    }
+
+    public void PlaceObject()
+    {
+        int i = 0;
+        foreach (Transform child in modelContainer.transform)
+        {
+            child.GetComponent<Renderer>().material = defaultMats[i];
+            i++;
+        }
+        objCollider.isTrigger = false;
+        rigidBody.isKinematic = false;
+        isPlaced = true;
+    }
+}
