@@ -37,6 +37,9 @@ public class RobotBuilder: MonoBehaviour, IFileReceiver{
 				}
 			}
 		}
+        robot.PostBuild();
+        ObjectManager.instance.AddObjectToMouse(robotObject.GetComponent<PlaceableObject>());
+        ServerManager.instance.testBot = robot;
 		return robotObject;
 	}
 
@@ -99,6 +102,7 @@ public class RobotBuilder: MonoBehaviour, IFileReceiver{
 		{
 		case "LabBot":
 			robot = robotObject.AddComponent<LabBot>();
+            (robot as LabBot).Initialize();
 			break;
 		default:
 			Debug.Log("Couldnt find robot type");
@@ -111,6 +115,7 @@ public class RobotBuilder: MonoBehaviour, IFileReceiver{
 
 		string fullpath = filepath.Substring (0, filepath.LastIndexOf (ApplicationHelper.slash())) + ApplicationHelper.slash() + modelPath;
 		GameObject model = OBJLoader.LoadOBJFile(fullpath);
+        model.name = "Model";
 		model.transform.SetParent(robotObject.transform, false);
 		model.transform.rotation = Quaternion.Euler(0, 90, 0);
 
@@ -199,7 +204,7 @@ public class RobotBuilder: MonoBehaviour, IFileReceiver{
 	}
 
 	public void addCamera(Vector3 position, float pan, float tilt, int imageWidth, int imageHeight) {
-		if(!(robot is HasCameras))
+		if(!(robot is ICameras))
 		{
 			Debug.Log("Trying to add Camera to unsupported robot type");
 		}

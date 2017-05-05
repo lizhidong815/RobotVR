@@ -27,11 +27,14 @@ public class RobotConnection
 {
     public TcpClient tcpClient;
     public Robot robot;
+
+    public int ID;
     public bool inScene = false;
 
-    public RobotConnection(TcpClient newClient)
+    public RobotConnection(TcpClient newClient, int newID)
     {
         tcpClient = newClient;
+        ID = newID;
     }
 
     public void AddRobotToScene(Robot newRobot)
@@ -43,12 +46,13 @@ public class RobotConnection
 public class ServerManager : MonoBehaviour
 {
     public static ServerManager instance = null;
+   // public PendingRobotPanel pendingRobotPanel;
+
     List<RobotConnection> conns = new List<RobotConnection>();
 
     // TESTING
     public Robot testBot;
-    private int robotIDs = 0;
-    //
+    private int robotIDs = 1;
 
     TcpListener listener = null;
     int port = 8888;
@@ -67,15 +71,30 @@ public class ServerManager : MonoBehaviour
             Debug.Log("Failed to remove connection");
     }
 
+    private void ReplyHandshake(RobotConnection conn)
+    {
+        Packet p = new Packet();
+        p.packetType = PacketType.SERVER_HANDSHAKE;
+        p.dataSize = 0;
+        WritePacket(conn, p);
+
+        p = new Packet();
+        p.packetType = PacketType.SERVER_READY;
+        p.dataSize = 0;
+        WritePacket(conn, p);
+    }
 
     // Accept a pending connection
     private void AcceptConnection()
     {
         TcpClient client = listener.AcceptTcpClient();
-        RobotConnection newClient = new RobotConnection(client);
-        newClient.AddRobotToScene(testBot);
-        Debug.Log("Accepted a connection");
+        RobotConnection newClient = new RobotConnection(client, robotIDs);
+        newClient.robot = testBot;
+        testBot.myConnection = newClient;
         conns.Add(newClient);
+        robotIDs++;
+        Debug.Log("Accepted a connection");
+        ReplyHandshake(newClient);
     }
 
     // Read a packet from a connection
@@ -86,6 +105,18 @@ public class ServerManager : MonoBehaviour
 
         // Read Header
         int bytesRead = stream.Read(recvBuf, 0, 5);
+
+        // Check the read is successful
+        if(bytesRead != 5)
+        {
+            // If failed, flush the read buffer
+            Debug.Log("Failed to read packet header");
+            while (stream.DataAvailable)
+            {
+                stream.Read(recvBuf, 0, recvBuf.Length);
+            }
+            return;
+        }
         uint dataSize = BitConverter.ToUInt32(recvBuf,1);
         if (BitConverter.IsLittleEndian)
         {
@@ -98,7 +129,6 @@ public class ServerManager : MonoBehaviour
         {
             bytesRead = stream.Read(recvBuf, 0, (int)dataSize);
         }
-
         switch(packetType){
             case PacketType.CLIENT_HANDSHAKE:
                 if(conn.robot == null)
@@ -124,7 +154,10 @@ public class ServerManager : MonoBehaviour
 
         sendBuf[0] = Convert.ToByte(packet.packetType);
         BitConverter.GetBytes(size).CopyTo(sendBuf, 1);
-        packet.data.CopyTo(sendBuf, 5);
+        if (packet.dataSize > 0)
+        {
+            packet.data.CopyTo(sendBuf, 5);
+        }
 
         NetworkStream stream = conn.tcpClient.GetStream();
         stream.Write(sendBuf, 0, ((int)packet.dataSize) + 5);
@@ -142,10 +175,15 @@ public class ServerManager : MonoBehaviour
         listener.Start();
         StartCoroutine(CheckConnections());
         Debug.Log("Server Started");
-    }   
-	
-	// Update is called once per frame
-	void Update ()
+    }
+
+    void Start()
+    {
+
+    }
+
+    // Update is called once per frame
+    void Update ()
     {
         if (listener.Pending())
         {

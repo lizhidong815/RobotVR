@@ -5,14 +5,9 @@ using UnityEngine;
 using RobotComponents;
 using RobotCommands;
 
-public class PSDController : MonoBehaviour, IPSDSensorControl {
+public class PSDController : MonoBehaviour {
 
     public List<PSDSensor> sensors;
-
-    public PSDController()
-    {
-        sensors = new List<PSDSensor>();
-    }
 
     public UInt16 GetPSDValue(int psd)
     {   

@@ -1,16 +1,27 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
+// Object manager handles objects in the scene
+// Allows placement of objects at run-time
 public class ObjectManager : MonoBehaviour {
 
     public static ObjectManager instance = null;
 
-    public LayerMask groundMask;
+    public int totalObjects = 0;
 
+    // Stores reference to the Ground LayerMask, and shaders to use during placement
+    public LayerMask groundMask;
     public Material validMat;
     public Material invalidMat;
-    public Material defaultMat;
+
+    public GameObject placeableCylinder;
+    public GameObject placeableCube;
+
+    // Specific object currently being placed (one at a time strict)
+    public bool objectBeingPlaced = false;
+    public PlaceableObject objectOnMouse;
 
     private void Awake()
     {
@@ -27,84 +38,52 @@ public class ObjectManager : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
-        groundMask = LayerMask.GetMask("Ground");
-        validMat = (Material)Resources.Load("Materials/DefaultMaterial", typeof(Material));
-        validMat = (Material)Resources.Load("Materials/PlacementValidMaterial", typeof(Material));
-        invalidMat = (Material)Resources.Load("Materials/PlacementInvalidMaterial", typeof(Material));
-    }
-    /* 
-    WORKING ON THIS STILL coming soon
-
-
-    public int axels = 0;
-    public bool beingPlaced = true;
-
-    public Renderer modelRenderer;
-
-    protected Material myMat;
-    private Rigidbody myBody;
-    private Collider myCollider;
-    private LayerMask groundMask;
-
-    private Material valid;
-    private Material invalid;
-    [SerializeField]
-    private bool validPlacement = true;
-
-    protected virtual void Start()
-    {
-        myBody = gameObject.GetComponent<Rigidbody>();
-        myCollider = gameObject.GetComponent<BoxCollider>();
-
-        valid = ObjectManager.instance.validMat;
-        invalid = ObjectManager.instance.invalidMat;
-        myMat = ObjectManager.instance.defaultMat;
-        groundMask = ObjectManager.instance.groundMask;
-
-        myBody.isKinematic = true;
-        myCollider.isTrigger = true;
     }
 
-    protected virtual void Update()
+    public void AddTestObject()
     {
+        GameObject testBot = Resources.Load("TestRobot") as GameObject;
+        objectOnMouse = Instantiate(testBot).GetComponent<PlaceableObject>();
+        objectBeingPlaced = true;
+    }
 
-        if (beingPlaced == true)
+    public void AddCylinderToScene()
+    {
+        PlaceableObject newCyl = Instantiate(placeableCylinder).GetComponent<PlaceableObject>();
+        newCyl.PostBuild();
+        newCyl.objectID = totalObjects;
+        totalObjects++;
+        AddObjectToMouse(newCyl);
+    }
+
+    public void AddObjectToMouse(PlaceableObject newObject)
+    {
+        objectOnMouse = newObject;
+        objectBeingPlaced = true;
+        newObject.AttachToMouse();
+    }
+
+    public void PlaceObject()
+    {
+        objectBeingPlaced = false;
+        objectOnMouse.PlaceObject();
+        objectOnMouse = null;
+    }
+
+    private void Update()
+    {
+        if (objectBeingPlaced)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, 1000, groundMask))
+            if(Physics.Raycast(ray, out hit, 1000f, groundMask))
             {
-                transform.position = new Vector3(hit.point.x, 0.2f, hit.point.z);
+                objectOnMouse.transform.position = new Vector3(hit.point.x, 0.03f, hit.point.z);
             }
-
-            // Check of the placement condition is met
-            if (Input.GetKeyDown(KeyCode.A) && validPlacement)
+            if(Input.GetKeyDown(KeyCode.A) && objectOnMouse.validPlacement)
             {
-                myBody.isKinematic = false;
-                myCollider.isTrigger = false;
-                modelRenderer.material = myMat;
-                beingPlaced = false;
+                PlaceObject();
             }
         }
     }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (beingPlaced)
-        {
-            validPlacement = false;
-            modelRenderer.material = invalid;
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (beingPlaced)
-        {
-            validPlacement = true;
-            modelRenderer.material = valid;
-        }
-    }
-    */
-
 }

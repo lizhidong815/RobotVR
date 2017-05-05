@@ -22,21 +22,26 @@ namespace RobotComponents
         public int I;
         public int D;
 
-		public void SetPIDParams(int p, int i, int d){
+		public void SetPIDParams(int p, int i, int d)
+        {
 			pidEnabled = true;
 			P = p;
 			I = i;
 			D = d;
 		}
 
-		public void SetSpeed(float speed){
+        // SetSpeed sets the translational speed of the wheel
+		public void SetSpeed(float speed)
+        {
 			SetMotorSpeed (speed / Mathf.PI / diameter * 360);
 		}
 
-		public float GetSpeed(){
+		public float GetSpeed()
+        {
 			return tickrate / encoderRate * Mathf.PI * diameter;
 		}
 
+        // SetMotorSpeed sets the rotation speed of the wheel
 		public void SetMotorSpeed(float speed)
 		{
 			this.speed = speed;
@@ -44,13 +49,10 @@ namespace RobotComponents
 			newmotor.targetVelocity = speed;
 			wheelHingeJoint.motor = newmotor;
 		}
-			
-		public void FixedUpdate()
-		{
-				updateRotation ();
-		}
 
-		public void updateRotation(){
+        // Apply wheel rotation to visual representation
+		public void updateRotation()
+        {
 			float deltaAngle = GetComponent<HingeJoint>().angle - currentrotation;
 			if (Mathf.Abs (deltaAngle) < 20)
 				tickrate = deltaAngle * encoderRate / 360;
@@ -58,5 +60,10 @@ namespace RobotComponents
 			ticks += tickrate;
 			currentrotation = GetComponent<HingeJoint>().angle;
 		}
+
+        private void FixedUpdate()
+        {
+            updateRotation();
+        }
     }
 }

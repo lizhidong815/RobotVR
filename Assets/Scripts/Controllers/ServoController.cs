@@ -4,7 +4,7 @@ using UnityEngine;
 using RobotComponents;
 using RobotCommands;
 
-public class ServoController : MonoBehaviour, IServoControl{
+public class ServoController : MonoBehaviour {
 
     public List<Servo> servos;
 

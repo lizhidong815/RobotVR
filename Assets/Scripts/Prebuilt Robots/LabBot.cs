@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using RobotCommands;
+using RobotComponents;
 
 public class LabBot : Robot, 
     IMotors,
@@ -11,124 +11,125 @@ public class LabBot : Robot,
     IPSDSensors,
     IServoSettable,
     IVWDrivable,
-    HasCameras
+    ICameras
 {
-    // Available Commands
-    ICommand<int[]> driveMotor;
-    ICommand<int[]> driveMotorControlled;
-    ICommand<int[]> setPid;
-    ICommand<int[]> setPose;
-    ICommand<int[]> setServo;
-    ICommand<int[]> setCamRes;
-
-    // Returning commands need to have concrete type
-    GetVehiclePoseCommand getPose;
-    GetPSDSensorValueCommand getPsd;
-    GetCameraOutputCommand getCamOut;
-
     // Controllers
     public WheelMotorController wheelController;
-    public PoseController poseController;
     public PSDController psdController;
     public ServoController servoController;
     public EyeCameraController eyeCamController;
 
-    // Initialize controllers
-    public LabBot()
-    { 
-
-    }
+    Action<RobotConnection> driveDoneDelegate;
 
     // Initialize commands
     private void Awake()
     {
+
+    }
+
+    // This function sets the controllers for a newly created LabBot object
+    // Used when a robot is created from file
+    public void Initialize()
+    {
         wheelController = gameObject.AddComponent<WheelMotorController>();
-        poseController = gameObject.AddComponent<PoseController>();
         psdController = gameObject.AddComponent<PSDController>();
         servoController = gameObject.AddComponent<ServoController>();
         eyeCamController = gameObject.AddComponent<EyeCameraController>();
-
-        driveMotor = new MotorDriveCommand(wheelController);
-        driveMotorControlled = new MotorDriveControlledCommand(wheelController);
-        setPid = new SetPIDCommand(wheelController);
-        setPose = new SetVehiclePoseCommand(poseController);
-        getPose = new GetVehiclePoseCommand(poseController);
-        setServo = new SetServoCommand(servoController);
-        getPsd = new GetPSDSensorValueCommand(psdController);
-        getCamOut = new GetCameraOutputCommand(eyeCamController);
-        setCamRes = new SetCameraResolutionCommand(eyeCamController);
+        wheelController.wheels = new List<Wheel>();
+        psdController.sensors = new List<PSDSensor>();
+        servoController.servos = new List<Servo>();
+        eyeCamController.cameras = new List<EyeCamera>();
     }
 
-
-    public void DriveMotor(int[] args)
+    public void DriveDoneCallback()
     {
-        driveMotor.Execute(args);
+        driveDoneDelegate(myConnection);
     }
 
-    public void DriveMotorControlled(int[] args)
+    public void DriveMotor(int motor, int speed)
     {
-        driveMotorControlled.Execute(args);
+        wheelController.SetMotorSpeed(motor, speed);
     }
 
-    public void SetPID(int[] args)
+    public void DriveMotorControlled(int motor, int ticks)
     {
-        setPid.Execute(args);
+        wheelController.SetMotorControlled(motor, ticks);
     }
 
-    public void SetServo(int[] args)
+    public void SetPID(int motor, int p, int i, int d)
     {
-        setServo.Execute(args);
+        wheelController.SetPIDParams(motor, p, i, d);
     }
-    public void SetPose(int[] args)
+
+    public void SetServo(int servo, int angle)
     {
-        setPose.Execute(args);
+        servoController.SetServoPosition(servo, angle);
+    }
+
+    public void SetPose(int x, int y, int phi)
+    {
+        wheelController.Pos.x = x;
+        wheelController.Pos.z = y;
+        wheelController.Rot = phi;
     }
 
     public Pose GetPose()
     {
-        getPose.Execute(0);
-        return getPose._pose;
+        return new Pose(Convert.ToInt32(Math.Round(wheelController.Pos.x)), 
+            Convert.ToInt32(Math.Round(wheelController.Pos.z)), 
+            Convert.ToInt32(Math.Round(wheelController.Rot)));
     }
 
-    public UInt16 GetPSD(int args)
+    public UInt16 GetPSD(int psd)
     {
-        getPsd.Execute(args);
-        return getPsd._value;
+        return psdController.GetPSDValue(psd);
     }
 
-    public void VWSetVehicleSpeed(int[] args)
+    public void VWSetVehicleSpeed(int linear, int angular)
     {
         throw new NotImplementedException();
     }
 
     public Speed VWGetVehicleSpeed()
     {
-        throw new NotImplementedException();
+        return wheelController.GetSpeed();
     }
 
-    public void VWDriveStraight(int[] args)
+    public void VWDriveStraight(int distance, int speed)
     {
-		wheelController.DriveStraight ((float) args [0]/1000, (float) args [1]/1000);
+		wheelController.DriveStraight ((float) distance/1000, (float) speed/1000);
     }
 
-    public void VWDriveTurn(int[] args)
+    public void VWDriveTurn(int rotation, int velocity)
     {
-		wheelController.DriveTurn (args [0], args [1]);
+        Debug.Log("Turn " + rotation + " degrees with speed " + velocity);
+		wheelController.DriveTurn (rotation, velocity);
     }
 
-    public void VWDriveCurve(int[] args)
+    public void VWDriveCurve(int distance, int rotation, int velocity)
     {
-		wheelController.DriveCurve ((float) args [0]/1000, args [1], (float) args [2]/1000);
+		wheelController.DriveCurve ((float) distance/1000, rotation, (float) velocity/1000);
     }
 
     public int VWDriveRemaining()
     {
+        return wheelController.DriveRemaining();
+    }
+
+    public bool VWDriveDone()
+    {
+		return wheelController.DriveDone ();
+    }
+
+    public int VWDriveStalled()
+    {
         throw new NotImplementedException();
     }
 
-    public int VWDriveDone()
+    public void VWDriveWait(Action<RobotConnection> doneCallback)
     {
-		return wheelController.DriveDone ();
+        driveDoneDelegate = doneCallback;
+        wheelController.DriveDoneDelegate = DriveDoneCallback;
     }
 
     public void InitalizeVW(int[] args)
@@ -136,24 +137,13 @@ public class LabBot : Robot,
         throw new NotImplementedException();
     }
 
-    public void StopVWControl()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetVWParams(int[] args)
-    {
-        throw new NotImplementedException();
-    }
-
     public byte[] GetCameraOutput(int camera)
     {
-        getCamOut.Execute(camera);
-        return getCamOut.img;
+        return eyeCamController.GetBytes(camera);
     }
 
-    public void SetCameraResolution(int[] args)
+    public void SetCameraResolution(int camera, int width, int height)
     {
-        setCamRes.Execute(args);
+        eyeCamController.SetResolution(camera, width, height);
     }
 }
