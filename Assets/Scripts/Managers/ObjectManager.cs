@@ -62,6 +62,7 @@ public class ObjectManager : MonoBehaviour {
 
     public void PlaceObject()
     {
+		print ("placeit");
         objectOnMouse.PlaceObject();
         objectOnMouse = null;
     }
@@ -72,11 +73,14 @@ public class ObjectManager : MonoBehaviour {
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            if(Physics.Raycast(ray, out hit, 1000f, groundMask))
-            {
-                objectOnMouse.transform.position = new Vector3(hit.point.x, 0.03f, hit.point.z);
-            }
-            if(Input.GetKeyDown(KeyCode.A) && objectOnMouse.validPlacement)
+			Plane ground = new Plane (new Vector3 (0, 1, 0), new Vector3 (0, 0, 0));
+			float distance;
+			if(ground.Raycast(ray, out distance)){
+				Vector3 hitpoint = ray.GetPoint (distance);
+				objectOnMouse.transform.position = new Vector3(hitpoint.x, 0.03f, hitpoint.z);
+			}
+			bool valid = objectOnMouse.updateValidity (Physics.Raycast (ray, out hit, 1000f, groundMask));
+			if(Input.GetMouseButtonDown(0) && valid)
             {
                 PlaceObject();
             }

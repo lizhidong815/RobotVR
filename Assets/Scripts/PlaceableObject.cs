@@ -9,10 +9,10 @@ public abstract class PlaceableObject : MonoBehaviour, IPointerClickHandler
 {
     public ObjectSelector objectSelector;
 
-    public bool validPlacement = true;
     public bool isPlaced = false;
     public bool isSelected = false;
     public int currLayer = 0;
+	public int collisionCount = 0;
 
     public int objectID;
 
@@ -49,11 +49,7 @@ public abstract class PlaceableObject : MonoBehaviour, IPointerClickHandler
     {
         if (!isPlaced)
         {
-            foreach (Transform child in modelContainer.transform)
-            {
-                child.GetComponent<Renderer>().material = invalidMat;           
-            }
-            validPlacement = false;
+			collisionCount++;
         }
     }
 
@@ -61,13 +57,18 @@ public abstract class PlaceableObject : MonoBehaviour, IPointerClickHandler
     {
         if (!isPlaced)
         {
-            foreach (Transform child in modelContainer.transform)
-            {
-                child.GetComponent<Renderer>().material = validMat;
-            }
-            validPlacement = true;
+			collisionCount--;
         }
     }
+
+	public bool updateValidity(bool onGround){
+		bool valid = onGround && collisionCount == 0;
+		Material newMat = valid ? validMat : invalidMat;
+		foreach (Transform child in modelContainer.transform) {
+			child.GetComponent<Renderer> ().material = newMat;
+		}
+		return valid;
+	}
 
     public void OnPointerClick(PointerEventData eventData)
     {
@@ -114,7 +115,7 @@ public abstract class PlaceableObject : MonoBehaviour, IPointerClickHandler
         {
             child.GetComponent<Renderer>().material = validMat;
         }
-        validPlacement = true;
+		collisionCount = 0;
         objCollider.isTrigger = true;
         rigidBody.isKinematic = true;
     }
