@@ -27,6 +27,7 @@ public class UIManager : MonoBehaviour {
     {
 		Transform canvas = GameObject.Find ("Canvas").transform;
 		robotList = canvas.GetChild(0).FindChild ("Robots");
+		robotList.GetChild (0).GetChild (0).GetComponent<RectTransform> ().localPosition = Vector3.zero;
 		clientList = canvas.GetChild(0).FindChild ("Clients");
 		blockingPanel = canvas.GetChild(0).FindChild("BlockingPanel").gameObject;
 
@@ -66,4 +67,25 @@ public class UIManager : MonoBehaviour {
         robotBuilder = RobotBuilder.instance;
         CreateButtons();    
     }
+
+	public void addButton(GameObject objectLink){
+		Transform button = ((GameObject)Instantiate (Resources.Load ("RobotButton"))).transform;
+		button.SetParent(robotList.GetChild(0).GetChild(0),false);
+		button.GetChild(1).GetComponent<Button> ().onClick.AddListener (() => {GameObject.Destroy(objectLink);removeButton(button.gameObject);});
+		updateButtons ();
+	}
+
+	void updateButtons(){
+		Transform content = robotList.GetChild (0).GetChild (0);
+		content.GetComponent<RectTransform> ().sizeDelta = new Vector2 (content.GetComponent<RectTransform> ().sizeDelta.x, content.childCount * 30);
+		for (int i = 0; i < content.childCount; i++) {
+			Vector3 pos = content.GetChild (i).GetComponent<RectTransform> ().localPosition;
+			content.GetChild (i).GetComponent<RectTransform> ().localPosition = new Vector3 (pos.x, -15 - 30 * i, pos.z);
+		}
+	}
+
+	void removeButton(GameObject button){
+		DestroyImmediate (button);
+		updateButtons ();
+	}
 }

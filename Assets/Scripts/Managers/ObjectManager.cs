@@ -20,7 +20,6 @@ public class ObjectManager : MonoBehaviour {
     public GameObject placeableCube;
 
     // Specific object currently being placed (one at a time strict)
-    public bool objectBeingPlaced = false;
     public PlaceableObject objectOnMouse;
 
     private void Awake()
@@ -44,7 +43,6 @@ public class ObjectManager : MonoBehaviour {
     {
         GameObject testBot = Resources.Load("TestRobot") as GameObject;
         objectOnMouse = Instantiate(testBot).GetComponent<PlaceableObject>();
-        objectBeingPlaced = true;
     }
 
     public void AddCylinderToScene()
@@ -59,20 +57,18 @@ public class ObjectManager : MonoBehaviour {
     public void AddObjectToMouse(PlaceableObject newObject)
     {
         objectOnMouse = newObject;
-        objectBeingPlaced = true;
         newObject.AttachToMouse();
     }
 
     public void PlaceObject()
     {
-        objectBeingPlaced = false;
         objectOnMouse.PlaceObject();
         objectOnMouse = null;
     }
 
     private void Update()
     {
-        if (objectBeingPlaced)
+		if (objectOnMouse != null)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
